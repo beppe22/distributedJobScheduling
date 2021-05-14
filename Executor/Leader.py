@@ -1,10 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from Executor import Executor
 
-
-class Leader(Executor):
+class Leader():
     def __init__(self):
         self.ex_map = None
         self.threshold = None

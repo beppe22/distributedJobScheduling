@@ -8,7 +8,7 @@ from time import sleep
 from MessageDefinition import *
 
 MINPORT = 49153
-BROD_PORT = 49152
+BROD_EL_PORT = 49152
 ELTIMEOUT = 5
 
 
@@ -21,6 +21,10 @@ class Executor(Thread):
         # connessioni
         self.executor_port = int(executor_port)
         self.b_port = int(b_port)
+
+        # leader info
+        self.leader_port = None
+        self.leader_ip = None
 
         self.sk_broadcast = None
 
@@ -66,7 +70,6 @@ class Executor(Thread):
 
                 elif self.coord_wait:
                     sk.settimeout(None)
-
                 sleep(step)
 
         except:
@@ -77,7 +80,7 @@ class Executor(Thread):
 
     def declare_coord(self):
         msg = COORDMSG + SEPARATOR + str(self.executor_port)
-        self.sk_broadcast.sendto(msg.encode(), ('<broadcast>', BROD_PORT))
+        self.sk_broadcast.sendto(msg.encode(), ('<broadcast>', BROD_EL_PORT))
         self.is_election = False
         self.is_leader = True
 
@@ -95,7 +98,7 @@ class Executor(Thread):
 
         # se sono più alto mando msg elect
         msg = ELECTMSG + SEPARATOR + str(self.executor_port)
-        self.sk_broadcast.sendto(msg.encode(), ('<broadcast>', BROD_PORT))
+        self.sk_broadcast.sendto(msg.encode(), ('<broadcast>', BROD_EL_PORT))
         # aspetto altri elect
         return
 
@@ -111,7 +114,7 @@ def main():
     if len(sys.argv) == 3:
         Executor(int(sys.argv[1]), int(sys.argv[2])).run()
     else:
-        Executor(BROD_PORT, MINPORT).run()
+        Executor(BROD_EL_PORT, MINPORT).run()
 
 
 if __name__ == "__main__":
