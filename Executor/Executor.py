@@ -9,6 +9,7 @@ from MessageDefinition import *
 
 MINPORT = 49153
 BROD_PORT = 49152
+ELTIMEOUT = 5
 
 
 # se avviato da StarterCMD è una classe normale, se avviato usando Starter utilizziamo i thread
@@ -33,7 +34,6 @@ class Executor(Thread):
         self.threshold = None
         self.job_result = None
 
-
     def listen_all(self):
         # avvio broadcast
         self.sk_broadcast = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)  # UDP
@@ -47,18 +47,43 @@ class Executor(Thread):
             self.run_election(0)
             self.first_start = False
 
-        while True:
-            data, addr = sk.recvfrom(1024)
-            print(data)
-            param = str(data).split(SEPARATOR)
-            if param[0] == ELECTMSG and not self.coord_wait:
-                self.run_election(param[1])
-            elif param[0] == COORDMSG:
+        # inizializzo il timer
+        step = 0.2
+        sk.settimeout(ELTIMEOUT)
+        try:
+            while True:
+                data, addr = sk.recvfrom(1024)
+                param = data.decode().split(SEPARATOR)
 
-                pass
-            #sleep(0.1)
+                if param[0] == ELECTMSG and not self.coord_wait and int(param[1]) != self.executor_port:
+                    print(param[1])
+                    self.run_election(int(param[1]))
+                    sk.settimeout(ELTIMEOUT)
+
+                elif param[0] == COORDMSG:
+                    print('COORDINATOREEEE' + param[1])
+                    return
+
+                elif self.coord_wait:
+                    sk.settimeout(None)
+
+                sleep(step)
+
+        except:
+            print('coord')
+            self.declare_coord()
+            return
+
+
+    def declare_coord(self):
+        msg = COORDMSG + SEPARATOR + str(self.executor_port)
+        self.sk_broadcast.sendto(msg.encode(), ('<broadcast>', BROD_PORT))
+        self.is_election = False
+        self.is_leader = True
 
     def run_election(self, starter_id):
+        print('mando elect')
+
         # sta runnando un elezione
         self.is_election = True
 
@@ -74,15 +99,11 @@ class Executor(Thread):
         # aspetto altri elect
         return
 
-
-
-
-
     def send_job_count(self, ):
         pass
 
     def run(self):
-        sleep(2)
+        sleep(3)
         self.listen_all()
 
 
