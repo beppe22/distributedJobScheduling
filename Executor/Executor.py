@@ -29,13 +29,15 @@ class Executor(Thread):
         # other flags
         self.is_election = None
         self.is_leader = None
+
+
         self.job_count = None
         self.threshold = None
         self.job_result = None
 
     def run(self):
         sleep(3)
-        self.elect_manager.listen_all()
+        self.elect_manager.start()
 
 
 def main():
