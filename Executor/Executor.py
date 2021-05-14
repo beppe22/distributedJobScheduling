@@ -42,7 +42,7 @@ def main():
     if len(sys.argv) == 3:
         Executor(int(sys.argv[1]), int(sys.argv[2])).run()
     else:
-        Executor(BROAD_EL_PORT, 2048).run()
+        Executor(BROAD_EL_PORT, MINPORT+100).run()
 
 
 if __name__ == "__main__":

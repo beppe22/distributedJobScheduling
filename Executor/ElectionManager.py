@@ -35,7 +35,11 @@ class ElectionManager:
                 data, addr = sk.recvfrom(1024)
                 param = data.decode().split(SEPARATOR)
 
+                if not self.owner.is_election:
+                    self.run_election(0)
+
                 if param[0] == ELECTMSG and not self.coord_wait and int(param[1]) != self.executor_port:
+
                     # siamo in un elezione
                     self.owner.is_election = True
                     print(param[1])
