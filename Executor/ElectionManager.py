@@ -1,7 +1,5 @@
 import socket
-from time import sleep
 from threading import Thread
-
 from MessageDefinition import *
 
 
@@ -14,54 +12,58 @@ class ElectionManager(Thread):
         self.owner = owner
         self.first_start = False
         self.coord_wait = False
-        # init
+        # init broadcast
         self.elect_socket_broadcast = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)  # UDP
         self.elect_socket_broadcast.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         self.elect_socket_broadcast.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.elect_socket_broadcast.bind(("", self.elect_port))
 
+    # resto nel loop in attesa di comunicazioni di ELECT
     def listen_all(self):
-        # avvio broadcast
 
         sk = self.elect_socket_broadcast
-        # primo avvio
-        #if self.first_start:
-         #   print('firststart')
-          #  self.run_election()
-           # self.first_start = False
-
         sk.settimeout(None)
-        # inizializzo il timer
+
+        # questo id verrà aggiornato in futuro per supportare i cluster su macchine diverse
         my_id = self.executor_port
+
+        # serve per evitare il flooding di messaggi. ci salviamo a quali id abbiamo già risposto
+        reply_list = [int(my_id)]
+
         try:
             while True:
+
                 data, addr = sk.recvfrom(1024)
                 param = data.decode().split(SEPARATOR)
 
-                if param[0] == ELECTMSG and not self.coord_wait and int(param[1]) != my_id:
-
+                # controllo che non sia in attesa di un COORD e che non abbia già risposto alla stessa risposta di ELECT
+                if param[0] == ELECTMSG and not self.coord_wait and not int(param[1]) in reply_list:
                     # siamo in un elezione
                     self.owner.is_election = True
                     print(param[1])
                     self.run_election(int(param[1]), my_id)
+                    reply_list.append(int(param[1]))
                     sk.settimeout(ELTIMEOUT)
 
+                # accetto il messaggio di COORD e resto in attesa di nuove elezioni
                 elif param[0] == COORDMSG and int(param[1]) != my_id:
                     print('Nuovo Coordinatore ' + param[1] + ' ' + str(addr))
                     self.owner.is_election = False
                     self.coord_wait = False
+                    reply_list = [int(my_id)]
 
-                if self.coord_wait:
+                # altrimenti resto in attesa di COORD
+                elif self.coord_wait:
                     sk.settimeout(None)
-                sleep(STEP)
 
+        # se non ricevo più messaggi di ELECT allora sono io il nuovo Leader, lo comunico e resto in attesa
         except:
             print('coord')
             self.declare_coord()
-            sk.recvfrom(1024) # mangio il mio coord
-            sleep(STEP)
+            sk.recvfrom(1024)  # mangio il mio COORD
             self.listen_all()
 
+    # mi dichiaro vincitore delle elezioni
     def declare_coord(self):
         msg = COORDMSG + SEPARATOR + str(self.my_id)
         print(msg)
@@ -70,23 +72,21 @@ class ElectionManager(Thread):
         self.owner.is_leader = True
         self.coord_wait = False
 
+    # avvio un elezione. i valori di default sono necessari per provocare un elezione di massa in tutto il cluster
     def run_election(self, starter_id=0, my_id=0):
-        print('mando elect')
 
-        # sta runnando un elezione
         self.owner.is_election = True
 
-        # verifico il rank di chi ha runnato la elect
+        # verifico il rank di chi ha mandato la ELECT
         if starter_id > my_id:
-            # mi metto in attesa
+            # sono più basso, mi metto in attesa
             self.coord_wait = True
             print('WAITING')
             return
 
-        # se sono più alto mando msg elect
+        # mando il mio messaggio di ELECT e mi rimetto in attesa
         msg = ELECTMSG + SEPARATOR + str(my_id)
         self.elect_socket_broadcast.sendto(msg.encode(), ('<broadcast>', BROAD_EL_PORT))
-        # aspetto altri elect
         return
 
     def run(self):
