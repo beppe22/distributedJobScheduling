@@ -36,15 +36,16 @@ class Executor(Thread):
         self.job_result = None
 
     def run(self):
-        sleep(3)
+        #sleep(3)
         self.elect_manager.start()
+        self.elect_manager.run_election()
 
 
 def main():
     if len(sys.argv) == 3:
         Executor(int(sys.argv[1]), int(sys.argv[2])).run()
     else:
-        Executor(BROAD_EL_PORT, MINPORT+100).run()
+        Executor(BROAD_EL_PORT, MINPORT-10).run()
 
 
 if __name__ == "__main__":
