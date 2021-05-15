@@ -10,7 +10,7 @@ class ElectionManager(Thread):
         Thread.__init__(self)
         self.owner = owner
         self.executor_port = self.owner.executor_port
-        self.my_id = self.executor_port
+        #self.my_id = self.executor_port
         self.elect_port = self.owner.elect_port
         self.first_start = False
         self.coord_wait = False
@@ -49,8 +49,8 @@ class ElectionManager(Thread):
 
                 # accetto il messaggio di COORD e resto in attesa di nuove elezioni
                 elif param[0] == COORDMSG and int(param[1]) != my_id:
-                    print('Nuovo Coordinatore ' + param[1])
-                    self.owner.leader_addr = (addr[0], int(param[1])+1)
+                    print('Nuovo Coordinatore ' + param[1] + ' in: '+param[2])
+                    self.owner.leader_addr = (addr[0], int(param[2])+1)
                     self.owner.is_leader = False
                     self.owner.is_election = False
                     self.coord_wait = False
@@ -77,11 +77,11 @@ class ElectionManager(Thread):
 
     # mi dichiaro vincitore delle elezioni
     def declare_coord(self):
-        msg = COORDMSG + SEPARATOR + str(self.my_id)
+        msg = COORDMSG + SEPARATOR + str(self.owner.id) + SEPARATOR + str(self.executor_port)
         print(msg)
         self.elect_socket_broadcast.sendto(msg.encode(), ('<broadcast>', self.elect_port))
         data, addr = self.elect_socket_broadcast.recvfrom(1024)  # mangio il mio COORD
-        self.owner.leader_addr = (addr[0], self.my_id+1)
+        self.owner.leader_addr = (addr[0], self.owner.executor_port+1)
         self.owner.is_leader = True
         self.owner.leader = Leader(self.owner)
         self.owner.leader.start()

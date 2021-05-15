@@ -15,7 +15,7 @@ flag = False
 
 
 class Executor(Thread):
-    def __init__(self, elect_port, update_port, executor_port, start_election=False):
+    def __init__(self, group_id, elect_port, update_port, executor_port, start_election=False):
         Thread.__init__(self)
 
         # connessioni
@@ -28,7 +28,9 @@ class Executor(Thread):
         self.updater = Updater(self)
 
         # id- deve essere un intero!
-        self.id = self.executor_port
+        self.group_id = group_id
+        self.id = int(str(group_id)+str(self.executor_port))
+        print(self.id)
 
         # leader info
         self.leader_addr = None
@@ -56,10 +58,10 @@ class Executor(Thread):
 def main():
     # se avviato tramite linea di comando
     if len(sys.argv) > 1:
-        Executor(int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3])).run()
+        Executor(int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])).run()
     else:
         # se avviato per aggiungere un executor dopo aver creato il cluster
-        Executor(BROAD_EL_PORT, BROAD_UP_PORT, 50000, True).run()
+        Executor(0, BROAD_EL_PORT, BROAD_UP_PORT, 50000, True).run()
 
 
 if __name__ == "__main__":
