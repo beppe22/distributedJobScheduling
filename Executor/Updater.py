@@ -1,3 +1,4 @@
+import random
 import socket
 from threading import Thread
 from time import sleep
@@ -31,6 +32,10 @@ class Updater(Thread):
         # se posso mando l'aggiornameto
         if self.owner.leader_addr:
             print('sending update')
+
+            # simulazione job
+            self.owner.job_count = int(random.uniform(0, 10))
+
             msg = str(self.owner.id)+SEPARATOR+str(self.owner.job_count)
             self.leader_socket.sendto(msg.encode(), self.owner.leader_addr)
 

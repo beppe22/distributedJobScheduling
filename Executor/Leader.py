@@ -27,7 +27,12 @@ class Leader(Thread):
         self.socket.bind(self.owner.leader_addr)
 
     def calc_threshold(self):
-        pass
+        tot_job = 0
+        exec_tot = 0
+        for i in self.ex_map:
+            tot_job = tot_job + int(self.ex_map.get(i))
+            exec_tot = exec_tot + 1
+        self.threshold = int(tot_job/exec_tot)
 
     def receive_up(self):
         data, addr = self.socket.recvfrom(1024)

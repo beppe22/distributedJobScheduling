@@ -59,7 +59,7 @@ def main():
         Executor(int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3])).run()
     else:
         # se avviato per aggiungere un executor dopo aver creato il cluster
-        Executor(BROAD_EL_PORT, BROAD_UP_PORT, 100, True).run()
+        Executor(BROAD_EL_PORT, BROAD_UP_PORT, 50000, True).run()
 
 
 if __name__ == "__main__":
