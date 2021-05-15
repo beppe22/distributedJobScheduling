@@ -11,8 +11,8 @@ MESSAGE = 'Quanti executors vuoi avviare?'
 def main():
     count = input(MESSAGE)
     for i in range(int(count)):
-        port = MINPORT+(i)
-        os.system("start cmd.exe /k python3 Executor.py "+str(BROAD_EL_PORT)+" "+str(port))
+        port = MINPORT+(i*2)
+        os.system("start cmd.exe /k python3 Executor.py "+str(BROAD_EL_PORT)+" "+str(BROAD_UP_PORT)+" "+str(port))
 
     sleep(3)
     run_first_elect()
