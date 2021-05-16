@@ -3,8 +3,8 @@
 import sys
 from threading import Thread
 
-import updater as up
-import election as el
+from cluster import updater as up
+from cluster import election as el
 import messages as comm
 
 flag = False

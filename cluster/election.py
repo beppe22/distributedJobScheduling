@@ -3,7 +3,7 @@
 import socket
 from threading import Thread
 
-import leader as ld
+from cluster import leader as ld
 import messages as comm
 
 

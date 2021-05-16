@@ -13,7 +13,7 @@ def main():
     count = input(MESSAGE)
     for i in range(int(count)):
         port = comm.MINPORT + (i * 2)
-        os.system("start cmd.exe /k python3 cluster/executor.py" + ' 1 ' + str(comm.BROAD_EL_PORT) + " " + str(comm.BROAD_UP_PORT) + " " + str(port))
+        os.system("start cmd.exe /k python3 -m cluster.executor" + ' 1 ' + str(comm.BROAD_EL_PORT) + " " + str(comm.BROAD_UP_PORT) + " " + str(port))
 
     sleep(3)
     run_first_elect()
