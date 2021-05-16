@@ -56,8 +56,8 @@ class Updater(Thread):
                 # mando il conteggio dei job attivi
                 self.send_job_count()
         except Exception as e:
-            print(e)
-            traceback.print_exc()
+            #print(e)
+            #traceback.print_exc()
             # è scattato il timeout, il leader si è disconnesso. devo mandare nuove elezioni
             print('Leader offline?')
             self.owner.elect_manager.run_election()

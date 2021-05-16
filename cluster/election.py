@@ -66,8 +66,8 @@ class ElectionManager(Thread):
 
         # se non ricevo più messaggi di ELECT allora sono io il nuovo Leader, lo comunico e resto in attesa
         except Exception as e:
-            print(e)
-            traceback.print_exc()
+            #print(e)
+            #traceback.print_exc()
             if self.coord_wait:
                 print("COORD LOST")
                 self.coord_wait = False
