@@ -46,13 +46,13 @@ class ElectionManager(Thread):
                     # siamo in un elezione
                     self.owner.is_election = True
                     print(param[1])
-                    self.run_election(int(param[1]), my_id)
+                    self.run_election(int(param[1]), int(my_id))
                     reply_list.append(int(param[1]))
                     sk.settimeout(comm.COORD_TO)
 
                 # accetto il messaggio di COORD e resto in attesa di nuove elezioni
                 elif param[0] == comm.COORDMSG and int(param[1]) != my_id:
-                    print('Nuovo Coordinatore ' + param[1] + ' in: '+param[2]+ ' ' + addr[0])
+                    print('Nuovo Coordinatore ' + param[1] + ' in: ' + param[2] + ' ' + addr[0])
                     self.owner.leader_addr = (addr[0], int(param[2])+1)
                     self.owner.is_leader = False
                     self.owner.is_election = False
