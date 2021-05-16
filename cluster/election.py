@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import socket
+import traceback
 from threading import Thread
 
 from cluster import leader as ld
@@ -51,7 +52,7 @@ class ElectionManager(Thread):
 
                 # accetto il messaggio di COORD e resto in attesa di nuove elezioni
                 elif param[0] == comm.COORDMSG and int(param[1]) != my_id:
-                    print('Nuovo Coordinatore ' + param[1] + ' in: '+param[2])
+                    print('Nuovo Coordinatore ' + param[1] + ' in: '+param[2]+ ' ' + addr[0])
                     self.owner.leader_addr = (addr[0], int(param[2])+1)
                     self.owner.is_leader = False
                     self.owner.is_election = False
@@ -65,8 +66,8 @@ class ElectionManager(Thread):
 
         # se non ricevo più messaggi di ELECT allora sono io il nuovo Leader, lo comunico e resto in attesa
         except Exception as e:
-            #print(e)
-            #traceback.print_exc()
+            print(e)
+            traceback.print_exc()
             if self.coord_wait:
                 print("COORD LOST")
                 self.coord_wait = False

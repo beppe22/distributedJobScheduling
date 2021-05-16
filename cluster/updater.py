@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import random
 import socket
+import traceback
 from threading import Thread
 from time import sleep
 
@@ -15,7 +16,7 @@ class Updater(Thread):
 
         #   socket su cui mando l' aggiornamento del job count
         self.leader_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)  # UDP
-        self.leader_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        #self.leader_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.first_start = True
 
 
@@ -27,7 +28,7 @@ class Updater(Thread):
 
     def send_job_count(self):
         if self.owner.leader_addr and self.first_start:
-            self.leader_socket.bind(self.owner.leader_addr)
+            #self.leader_socket.bind(self.owner.leader_addr)
             self.first_start = False
 
         # se posso mando l'aggiornameto
@@ -55,6 +56,8 @@ class Updater(Thread):
                 # mando il conteggio dei job attivi
                 self.send_job_count()
         except Exception as e:
+            print(e)
+            traceback.print_exc()
             # è scattato il timeout, il leader si è disconnesso. devo mandare nuove elezioni
             print('Leader offline?')
             self.owner.elect_manager.run_election()

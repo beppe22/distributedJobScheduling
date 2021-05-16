@@ -18,7 +18,7 @@ class Leader(Thread):
 
         # socket su cui mando gli aggiornamenti in broadcast riguardo la th
         self.update_socket_broadcast = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)  # UDP
-        self.update_socket_broadcast.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        #self.update_socket_broadcast.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.update_socket_broadcast.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
         # socket su cui ricevo aggiornamenti riguardo i singoli executor
