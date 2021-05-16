@@ -27,16 +27,17 @@ class Updater(Thread):
         self.update_socket_broadcast.bind(("", self.update_port))
 
     def send_job_count(self):
+        sleep(random.uniform(0.1, 1))
         if self.owner.leader_addr and self.first_start:
             #self.leader_socket.bind(self.owner.leader_addr)
             self.first_start = False
 
         # se posso mando l'aggiornameto
         if self.owner.leader_addr:
-            print('sending update')
+            #print('sending update')
 
             # simulazione job
-            self.owner.job_count = int(random.uniform(0, 10))
+            self.owner.job_count = int(random.uniform(0, 30))
 
             msg = str(self.owner.id)+comm.SEPARATOR+str(self.owner.job_count)
             self.leader_socket.sendto(msg.encode(), self.owner.leader_addr)
