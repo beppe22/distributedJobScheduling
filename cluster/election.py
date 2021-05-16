@@ -84,8 +84,8 @@ class ElectionManager(Thread):
         print(msg)
         self.elect_socket_broadcast.sendto(msg.encode(), ('<broadcast>', self.elect_port))
         data, addr = self.elect_socket_broadcast.recvfrom(1024)  # mangio il mio COORD
-        self.owner.leader_addr = (addr[0], self.owner.executor_port+1)
         self.owner.is_leader = True
+        self.owner.leader_addr = (addr[0], self.owner.executor_port+1)
         self.owner.leader = ld.Leader(self.owner)
         self.owner.leader.start()
         self.owner.is_election = False

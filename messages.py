@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-
+MESSAGE = "quanti exec vuoi avviare?"
+MESSAGE_GID = "group id:"
 ELECTMSG = "ELECT"
 SEPARATOR = ":"
 COORDMSG = "COORD"
