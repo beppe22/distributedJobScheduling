@@ -1,10 +1,10 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
+
 import socket
 from threading import Thread
 from time import sleep
 
-from MessageDefinition import *
+import messages as comm
 
 
 class Leader(Thread):
@@ -36,7 +36,7 @@ class Leader(Thread):
 
     def receive_up(self):
         data, addr = self.socket.recvfrom(1024)
-        param = data.decode().split(SEPARATOR)
+        param = data.decode().split(comm.SEPARATOR)
         self.ex_map.update({param[0]: param[1]})
         print(self.ex_map)
 

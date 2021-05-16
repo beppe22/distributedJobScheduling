@@ -1,9 +1,10 @@
+#!/usr/bin/env python3
 import random
 import socket
 from threading import Thread
 from time import sleep
 
-from MessageDefinition import *
+import messages as comm
 
 
 class Updater(Thread):
@@ -36,12 +37,12 @@ class Updater(Thread):
             # simulazione job
             self.owner.job_count = int(random.uniform(0, 10))
 
-            msg = str(self.owner.id)+SEPARATOR+str(self.owner.job_count)
+            msg = str(self.owner.id)+comm.SEPARATOR+str(self.owner.job_count)
             self.leader_socket.sendto(msg.encode(), self.owner.leader_addr)
 
     def update_th(self):
         sk = self.update_socket_broadcast
-        sk.settimeout(LEADER_OFFLINE_TO)
+        sk.settimeout(comm.LEADER_OFFLINE_TO)
         try:
             while True:
                 # se sta andando un elezione devo stare in attesa

@@ -1,16 +1,13 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-from threading import Thread
-import sys
-from time import sleep
+#!/usr/bin/env python3
 
-from ElectionManager import *
-from Leader import *
-from Updater import *
-from MessageDefinition import *
+import sys
+from threading import Thread
+
+import updater as up
+import election as el
+import messages as comm
 
 flag = False
-
 # se avviato da StarterCMD è una classe normale, se avviato usando Starter utilizziamo i thread
 
 
@@ -22,10 +19,10 @@ class Executor(Thread):
         self.executor_port = int(executor_port)
 
         self.elect_port = int(elect_port)
-        self.elect_manager = ElectionManager(self)
+        self.elect_manager = el.ElectionManager(self)
 
         self.update_port = int(update_port)
-        self.updater = Updater(self)
+        self.updater = up.Updater(self)
 
         # id- deve essere un intero!
         self.group_id = group_id
@@ -61,7 +58,7 @@ def main():
         Executor(int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])).run()
     else:
         # se avviato per aggiungere un executor dopo aver creato il cluster
-        Executor(0, BROAD_EL_PORT, BROAD_UP_PORT, 50000, True).run()
+        Executor(0, comm.BROAD_EL_PORT, comm.BROAD_UP_PORT, 50000, True).run()
 
 
 if __name__ == "__main__":
