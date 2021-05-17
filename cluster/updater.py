@@ -27,7 +27,7 @@ class Updater(Thread):
         self.update_socket_broadcast.bind(("", self.update_port))
 
     def send_job_count(self):
-        sleep(random.uniform(0.1, 1))
+        sleep(random.uniform(0.1, 0.5))
         if self.owner.leader_addr and self.first_start:
             #self.leader_socket.bind(self.owner.leader_addr)
             self.first_start = False
@@ -39,7 +39,7 @@ class Updater(Thread):
             # simulazione job
             self.owner.job_count = int(random.uniform(0, 30))
 
-            msg = str(self.owner.id)+comm.SEPARATOR+str(self.owner.job_count)
+            msg = str(self.owner.id)+comm.SEPARATOR+str(self.owner.job_count)+comm.SEPARATOR+str(self.owner.executor_port)
             self.leader_socket.sendto(msg.encode(), self.owner.leader_addr)
 
     def update_th(self):
@@ -52,17 +52,21 @@ class Updater(Thread):
                     sleep(0.5)
                 # ricevo l' aggiornamento
                 data, addr = sk.recvfrom(1024)
-                self.owner.threshold = int(data.decode())
-                print(self.owner.threshold)
+                param = data.decode().split(comm.SEPARATOR)
+                self.owner.threshold = int(param[0])
+                self.owner.free_exec = (param[1], param[2])
+                #print(str(self.owner.threshold) + ' ' + str(self.owner.free_exec))
                 # mando il conteggio dei job attivi
                 self.send_job_count()
-        except Exception as e:
-            #print(e)
-            #traceback.print_exc()
+        except socket.timeout:
             # è scattato il timeout, il leader si è disconnesso. devo mandare nuove elezioni
             print('Leader offline?')
             self.owner.elect_manager.run_election()
             self.update_th()
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+
 
     def run(self):
         self.update_th()

@@ -45,7 +45,7 @@ class ElectionManager(Thread):
                 if param[0] == comm.ELECTMSG and not self.coord_wait and not int(param[1]) in reply_list:
                     # siamo in un elezione
                     self.owner.is_election = True
-                    print(param[1])
+                    #print(param[1])
                     self.run_election(int(param[1]), int(my_id))
                     reply_list.append(int(param[1]))
                     sk.settimeout(comm.COORD_TO)
@@ -65,23 +65,24 @@ class ElectionManager(Thread):
                     sk.settimeout(comm.COORD_LOST_TO)
 
         # se non ricevo più messaggi di ELECT allora sono io il nuovo Leader, lo comunico e resto in attesa
-        except Exception as e:
-            #print(e)
-            #traceback.print_exc()
+        except socket.timeout:
             if self.coord_wait:
                 print("COORD LOST")
                 self.coord_wait = False
                 self.run_election()
                 self.listen_all()
             else:
-                print('coord')
+                print('COORD')
                 self.declare_coord()
                 self.listen_all()
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
 
     # mi dichiaro vincitore delle elezioni
     def declare_coord(self):
         msg = comm.COORDMSG + comm.SEPARATOR + str(self.owner.id) + comm.SEPARATOR + str(self.executor_port)
-        print(msg)
+        #print(msg)
         self.elect_socket_broadcast.sendto(msg.encode(), ('<broadcast>', self.elect_port))
         data, addr = self.elect_socket_broadcast.recvfrom(1024)  # mangio il mio COORD
         self.owner.is_leader = True

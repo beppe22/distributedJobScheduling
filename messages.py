@@ -5,11 +5,19 @@ ELECTMSG = "ELECT"
 SEPARATOR = ":"
 COORDMSG = "COORD"
 
-# executors param
+# il minimo delle porte usate dovrebbe essere 49152
 MINPORT = 49154
 BROAD_EL_PORT = 49152
 BROAD_UP_PORT = 49153
+
+# dopo quanti secondi posso dichiararmi vincitore
 COORD_TO = 2
+
+# per quanto resto in attesa di un COORD durante un elezione
 COORD_LOST_TO = 10
-LEADER_OFFLINE_TO = 4
-STEP = 0
+
+# dopo quanti sec il leader viene considerato offline
+LEADER_OFFLINE_TO = 3
+
+# ogni quanto il leader manda aggiornamenti
+STEP = 1

@@ -2,6 +2,7 @@
 
 import sys
 from threading import Thread
+from time import sleep
 
 from cluster import updater as up
 from cluster import election as el
@@ -37,8 +38,13 @@ class Executor(Thread):
         self.is_leader = False
         self.leader = None
 
+        # tupla con indirizzo dell'executor libero al momento
+        self.free_exec = (0,)
+
+        # qui o usiamo il contatore job_count oppure usiamo direttamente la dimensione della lista.
         self.job_count = 0
-        self.threshold = None
+        #valore arbitrario
+        self.threshold = 5
         self.job_result = None
 
         self.start_election = start_election
@@ -50,15 +56,24 @@ class Executor(Thread):
         self.updater.start()
         if self.start_election:
             self.elect_manager.run_election()
+        self.exec_stuff()
+
+    def exec_stuff(self):
+        while True:
+            while self.is_election or self.is_leader:
+                sleep(3)
+                pass
+            print(str(self.free_exec) + ' ' + str(self.threshold))
+            sleep(1)
 
 
 def main():
     # se avviato tramite linea di comando
     if len(sys.argv) > 1:
-        Executor(int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])).run()
+        Executor(int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])).start()
     else:
         # se avviato per aggiungere un executor dopo aver creato il cluster
-        Executor(0, comm.BROAD_EL_PORT, comm.BROAD_UP_PORT, 50000, True).run()
+        Executor(0, comm.BROAD_EL_PORT, comm.BROAD_UP_PORT, 50000, True).start()
 
 
 if __name__ == "__main__":

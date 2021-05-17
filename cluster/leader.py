@@ -12,8 +12,9 @@ class Leader(Thread):
         Thread.__init__(self)
         self.owner = owner
         self.ex_map = {}
+        self.ex_port = {}
         self.threshold = 0
-
+        self.free_exec = str(self.owner.leader_addr)+comm.SEPARATOR+str(self.owner.executor_port)
         self.update_port = self.owner.update_port
 
         # socket su cui mando gli aggiornamenti in broadcast riguardo la th
@@ -29,22 +30,57 @@ class Leader(Thread):
     def calc_threshold(self):
         tot_job = 0
         exec_tot = 0
-        for i in self.ex_map:
-            tot_job = tot_job + int(self.ex_map.get(i))
+        all_value = self.ex_map
+        temp = None
+        lazy = None
+        first = True
+        #stampo tutti i valori
+        #print(self.ex_map.values())
+        for i in all_value:
+            val = int(all_value.get(i))
+            if first:
+                temp = val
+                lazy = i
+                first = False
+            if val < temp:
+                lazy = i
+            tot_job = tot_job + val
             exec_tot = exec_tot + 1
+
         self.threshold = int(tot_job/exec_tot)
+        self.free_exec = self.ex_port.get(lazy)
+        #print('\nlazy exec: '+lazy + ' : ' + self.ex_map.get(lazy) + ' th:' +str(self.threshold))
+        #print(self.free_exec)
+
+    def monitor(self):
+        temp = str(self.threshold)
+        while len(temp) < 4:
+            temp = temp + ' '
+        msg = temp + '- '
+        for i in self.ex_map.values():
+            temp = str(i)
+            while len(temp) < 4:
+                temp = temp + ' '
+            msg = msg + temp
+        print(msg)
 
     def receive_up(self):
         data, addr = self.socket.recvfrom(1024)
         param = data.decode().split(comm.SEPARATOR)
         self.ex_map.update({param[0]: param[1]})
-        print(self.ex_map)
+        lazy = addr[0]+comm.SEPARATOR+param[2]
+        self.ex_port.update({param[0]: lazy})
 
     def run(self):
+
         while self.owner.is_leader:
-            self.update_socket_broadcast.sendto(str(self.threshold).encode(), ('<broadcast>', self.update_port))
+            msg = str(self.threshold) + comm.SEPARATOR + str(self.free_exec)
+            #print(msg)
+            self.update_socket_broadcast.sendto(msg.encode(), ('<broadcast>', self.update_port))
             self.receive_up()
             self.calc_threshold()
+            self.monitor()
+
             while self.owner.is_election:
-                sleep(1)
-            sleep(0.5)
+                sleep(0.3)
+            sleep(comm.STEP)
