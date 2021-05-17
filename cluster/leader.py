@@ -81,6 +81,6 @@ class Leader(Thread):
             self.calc_threshold()
             self.monitor()
 
-            while self.owner.is_election:
-                sleep(0.3)
+            if self.owner.is_election:
+                break
             sleep(comm.STEP)

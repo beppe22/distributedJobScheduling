@@ -20,4 +20,4 @@ COORD_LOST_TO = 10
 LEADER_OFFLINE_TO = 3
 
 # ogni quanto il leader manda aggiornamenti
-STEP = 1
+STEP = 0.3
