@@ -9,14 +9,22 @@ import messages as comm
 # utile per avere un executor su ogni finestra
 def main():
 
-    count = input(comm.MESSAGE)
+    count_executor = input(comm.MESSAGE)
     gid = input(comm.MESSAGE_GID)
-    for i in range(int(count)):
+    for i in range(int(count_executor)):
         port = comm.MINPORT + (i * 2)
         os.system("start cmd.exe /k python3 -m cluster.executor " + gid + ' ' + str(comm.BROAD_EL_PORT) + " " + str(comm.BROAD_UP_PORT) + " " + str(port))
 
+    count_client= input(comm.MESSAGE_NUMBER_CLIENT)
+    for i in range(int(count_client)):
+        client_port = comm.MIN_PORT_CLIENT + (i*2)
+        os.system("start cmd.exe /k python3 -m client.client " + str(client_port))
+
+
     sleep(3)
     run_first_elect()
+
+
 
 
 def run_first_elect():

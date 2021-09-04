@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-
+import os
 import sys
+import socket
 from threading import Thread
 from time import sleep
 
 from cluster import updater as up
 from cluster import election as el
 import messages as comm
+from cluster import job as j
 
 flag = False
 # se avviato da StarterCMD è una classe normale, se avviato usando Starter utilizziamo i thread
@@ -56,7 +58,57 @@ class Executor(Thread):
         self.updater.start()
         if self.start_election:
             self.elect_manager.run_election()
-        self.exec_stuff()
+        #self.exec_stuff()
+        self.receiving_job()
+
+        self.receiving_result()
+
+
+    def receiving_job(self):
+
+        self.job=0
+        self.job_list=[]
+
+        UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+        UDPServerSocket.bind(("", self.executor_port))
+        while(True):
+
+            bytesAddressPair= UDPServerSocket.recvfrom(1024)
+            message = bytesAddressPair[0]
+            address = bytesAddressPair[1]
+
+
+            clientMsg ="Messagge from client:{}".format(message)
+            clientAddress = "client address:{}".format(address)
+            print(clientMsg)
+            print(clientAddress)
+
+            #TODO fare i controlli per vedere se executor non ha superato threshold
+
+            self.job_list.append(j.Job(self.job,int(message),address[0],address[1]))
+            os.system("start cmd.exe /k python3 -m job_token " +str(self.job) + ' ' + str(int(message)))
+
+            self.job += 1
+            break
+
+    def receiving_result(self):
+
+        #TODO Dovrei creare un numero di porta di ricezione del risultato dei job diverso per ogni executor
+
+        UDPReceivingSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+        UDPReceivingSocket.bind(("",49220))
+        while (True):
+            bytesAddressPair = UDPReceivingSocket.recvfrom(1024)
+            message = bytesAddressPair[0]
+            address = bytesAddressPair[1]
+            clientMsg = "risultato:{}".format(message)
+
+            print(clientMsg)
+
+
+
+
+
 
     def exec_stuff(self):
         while True:

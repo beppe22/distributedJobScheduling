@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
 class Job:
-    def __init__(self):
-        self.job_id = None
-        self.parameter = None
+    def __init__(self,job_id,parameter,IpClient,portClient):
+        self.job_id = job_id
+        self.parameter = parameter
         self.result = None
-        self.done = None
+        self.done = False
+        self.portClient=portClient
+        self.IpClient=IpClient
 
     def do(self, ):
         pass
