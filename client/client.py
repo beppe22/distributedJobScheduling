@@ -17,6 +17,7 @@ class Client(Thread):
         self.number= None
         self.IpServer=None
         self.PortServer= None
+        self.result= None
 
 
     def send_job(self, ):

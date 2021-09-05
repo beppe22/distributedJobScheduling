@@ -13,7 +13,8 @@ def main():
     gid = input(comm.MESSAGE_GID)
     for i in range(int(count_executor)):
         port = comm.MINPORT + (i * 2)
-        os.system("start cmd.exe /k python3 -m cluster.executor " + gid + ' ' + str(comm.BROAD_EL_PORT) + " " + str(comm.BROAD_UP_PORT) + " " + str(port))
+        port_for_job= comm.MINPORTFORJOB + (i*2)
+        os.system("start cmd.exe /k python3 -m cluster.executor " + gid + ' ' + str(comm.BROAD_EL_PORT) + " " + str(comm.BROAD_UP_PORT) + " " + str(port) + ' ' + str(port_for_job))
 
     count_client= input(comm.MESSAGE_NUMBER_CLIENT)
     for i in range(int(count_client)):

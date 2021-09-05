@@ -10,6 +10,7 @@ MESSAGE_TO_CLIENT = "give me the number to elaborate"
 
 # il minimo delle porte usate dovrebbe essere 49152
 MINPORT = 49154
+MINPORTFORJOB= 49180
 BROAD_EL_PORT = 49152
 BROAD_UP_PORT = 49153
 MIN_PORT_CLIENT = 49200

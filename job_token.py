@@ -6,19 +6,21 @@ from time import sleep
 
 
 class JobToken(Thread):
-    def __init__(self,job_id,parameter):
+    def __init__(self,job_id,parameter,executor_port,executor_ip):
         Thread.__init__(self)
         self.job_id = job_id
         self.parameter = parameter
         self.result = None
+        self.executor_port= executor_port
+        self.executor_ip= executor_ip
 
     def send_result(self, ):
-        bytesToSend = str.encode(str(self.result))
+        bytesToSend = str.encode(str(self.result) + ' '+ str(self.job_id))
 
         UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-        UDPClientSocket.sendto(bytesToSend, ('127.0.0.1', 49220))
+        UDPClientSocket.sendto(bytesToSend, (self.executor_ip, self.executor_port))
 
-        #TODO oltre al risultato dovrei mandare anche l'id del job così da cercarlo nella lista
+
         #TODO dovrei killare
 
     def compute_result(self, ):
@@ -37,7 +39,7 @@ class JobToken(Thread):
 
 
 def main():
-    JobToken(int(sys.argv[1]),int(sys.argv[2])).start()
+    JobToken(int(sys.argv[1]),int(sys.argv[2]),int(sys.argv[3]),str(sys.argv[4])).start()
 
 
 if __name__ == "__main__":

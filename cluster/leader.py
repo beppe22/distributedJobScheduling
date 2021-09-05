@@ -62,7 +62,7 @@ class Leader(Thread):
             while len(temp) < 4:
                 temp = temp + ' '
             msg = msg + temp
-        print(msg)
+        #print(msg)
 
     def receive_up(self):
         data, addr = self.socket.recvfrom(1024)
