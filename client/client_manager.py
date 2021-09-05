@@ -18,7 +18,12 @@ class ClientManager(Thread):
 
         self.UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
         self.UDPClientSocket.sendto(bytesToSend,(str(self.IpServer),int(self.PortServer)))
+        self.receiving_job_id()
         self.receiving_result()
+
+    def receiving_job_id(self):
+        msg=self.UDPClientSocket.recvfrom(1024)
+        print("L'id del job è {}".format(str(int(msg[0]))))
 
     def receiving_result(self):
 

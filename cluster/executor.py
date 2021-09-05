@@ -7,8 +7,9 @@ from time import sleep
 
 from cluster import updater as up
 from cluster import election as el
+from cluster import job_manager as jm
 import messages as comm
-from cluster import job as j
+
 
 flag = False
 # se avviato da StarterCMD è una classe normale, se avviato usando Starter utilizziamo i thread
@@ -27,6 +28,8 @@ class Executor(Thread):
 
         self.update_port = int(update_port)
         self.updater = up.Updater(self)
+
+        self.job_manager= jm.JobManager(self)
 
         # id- deve essere un intero!
         self.group_id = group_id
@@ -52,6 +55,13 @@ class Executor(Thread):
 
         self.start_election = start_election
 
+        #dizionario dei job
+        self.job_dict = {}
+
+        #socket per ricevere il job dal client e rispedire indietro un valore allo stesso client
+        self.UDPExecutorSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+
+
     def run(self):
 
         # faccio partire l'elect manager. se viene avviato senza StarterCMD serve un elezione "forzata"
@@ -60,38 +70,12 @@ class Executor(Thread):
         if self.start_election:
             self.elect_manager.run_election()
         #self.exec_stuff()
-        self.receiving_job()
+
+        self.job_manager.start()
 
         self.receiving_result()
 
 
-    def receiving_job(self):
-
-        self.job=0
-        self.job_dict={}
-
-        self.UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-        self.UDPServerSocket.bind(("", self.executor_port))
-        while(True):
-
-            bytesAddressPair= self.UDPServerSocket.recvfrom(1024)
-            message = bytesAddressPair[0]
-            address = bytesAddressPair[1]
-
-
-            clientMsg ="Messagge from client:{}".format(message)
-            clientAddress = "client address:{}".format(address)
-            print(clientMsg)
-            print(clientAddress)
-
-            #TODO fare i controlli per vedere se executor non ha superato threshold
-
-            self.job_dict[self.job]=(j.Job(self.job,int(message),address[0],address[1]))
-            os.system("start cmd.exe /k python3 -m job_token " +str(self.job) + ' ' + str(int(message)) +
-                      ' ' + str(self.port_for_job) + ' ' + str(socket.gethostname()))
-
-            self.job += 1
-            break
 
     def receiving_result(self):
 
@@ -111,7 +95,7 @@ class Executor(Thread):
             client_Ip= self.job_dict[int(message.split()[1])].IpClient
             client_port = self.job_dict[int(message.split()[1])].portClient
             client_address= (str(client_Ip),int(client_port))
-            self.UDPServerSocket.sendto(str.encode(str(int(message.split()[0]))),client_address)
+            self.UDPExecutorSocket.sendto(str.encode(str(int(message.split()[0]))),client_address)
 
             self.job_dict.pop(int(message.split()[1]),"Element not found")
 

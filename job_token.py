@@ -6,8 +6,9 @@ from time import sleep
 
 
 class JobToken(Thread):
-    def __init__(self,job_id,parameter,executor_port,executor_ip):
+    def __init__(self,owner,job_id,parameter,executor_port,executor_ip):
         Thread.__init__(self)
+        self.owner=owner
         self.job_id = job_id
         self.parameter = parameter
         self.result = None
@@ -35,13 +36,4 @@ class JobToken(Thread):
         self.compute_result()
 
 
-
-
-
-def main():
-    JobToken(int(sys.argv[1]),int(sys.argv[2]),int(sys.argv[3]),str(sys.argv[4])).start()
-
-
-if __name__ == "__main__":
-    main()
 
