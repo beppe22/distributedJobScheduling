@@ -29,7 +29,8 @@ class ClientManager(Thread):
 
         messageFromServer= self.UDPClientSocket.recvfrom(1024)
         msg= "Il risultato è {}".format(messageFromServer[0])
-        print(msg)
+        print("Il risultato è")
+        print(int(messageFromServer[0]))
 
     def run(self):
         self.send_job()

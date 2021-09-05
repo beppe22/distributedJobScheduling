@@ -29,6 +29,9 @@ class Executor(Thread):
         self.update_port = int(update_port)
         self.updater = up.Updater(self)
 
+        # dizionario dei job
+        self.job_dict = {}
+
         self.job_manager= jm.JobManager(self)
 
         # id- deve essere un intero!
@@ -55,8 +58,7 @@ class Executor(Thread):
 
         self.start_election = start_election
 
-        #dizionario dei job
-        self.job_dict = {}
+
 
         #socket per ricevere il job dal client e rispedire indietro un valore allo stesso client
         self.UDPExecutorSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
