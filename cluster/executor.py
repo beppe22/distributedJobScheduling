@@ -26,13 +26,14 @@ class Executor(Thread):
         self.elect_port = int(elect_port)
         self.elect_manager = el.ElectionManager(self)
 
+
         self.update_port = int(update_port)
         self.updater = up.Updater(self)
 
         # dizionario dei job
         self.job_dict = {}
 
-        self.job_manager= jm.JobManager(self)
+        self.job_manager = jm.JobManager(self)
 
         # id- deve essere un intero!
         self.group_id = group_id
@@ -71,9 +72,9 @@ class Executor(Thread):
         self.updater.start()
         if self.start_election:
             self.elect_manager.run_election()
-        #self.exec_stuff()
-
         self.job_manager.start()
+
+        self.exec_stuff()
 
         self.receiving_result()
 

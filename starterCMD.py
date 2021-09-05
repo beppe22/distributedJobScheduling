@@ -16,14 +16,17 @@ def main():
         port_for_job= port +2
         os.system("start cmd.exe /k python3 -m cluster.executor " + gid + ' ' + str(comm.BROAD_EL_PORT) + " " + str(comm.BROAD_UP_PORT) + " " + str(port) + ' ' + str(port_for_job))
 
-    count_client= input(comm.MESSAGE_NUMBER_CLIENT)
+    sleep(3)
+    run_first_elect()
+
+
+    count_client = input(comm.MESSAGE_NUMBER_CLIENT)
     for i in range(int(count_client)):
         client_port = comm.MIN_PORT_CLIENT + i
         os.system("start cmd.exe /k python3 -m client.client " + str(client_port))
 
 
-    sleep(3)
-    run_first_elect()
+
 
 
 
