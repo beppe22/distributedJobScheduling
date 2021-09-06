@@ -16,16 +16,15 @@ flag = False
 
 
 class Executor(Thread):
-    def __init__(self, group_id, elect_port, update_port, executor_port,port_for_job, start_election=False):
+    def __init__(self, group_id, elect_port, update_port, executor_port, start_election):
         Thread.__init__(self)
 
         # connessioni
         self.executor_port = int(executor_port)
-        self.port_for_job=port_for_job
+        self.port_for_job = executor_port+2
 
         self.elect_port = int(elect_port)
         self.elect_manager = el.ElectionManager(self)
-
 
         self.update_port = int(update_port)
         self.updater = up.Updater(self)
@@ -61,8 +60,7 @@ class Executor(Thread):
 
 
 
-        #socket per ricevere il job dal client e rispedire indietro un valore allo stesso client
-        self.UDPExecutorSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+
 
 
     def run(self):
@@ -72,20 +70,22 @@ class Executor(Thread):
         self.updater.start()
         if self.start_election:
             self.elect_manager.run_election()
+
+        #job_manager gestisce pure i pingpong
         self.job_manager.start()
 
         self.exec_stuff()
 
-        self.receiving_result()
+        #self.receiving_result()
 
 
-
+    #TODO serve sto codice?
     def receiving_result(self):
 
 
         UDPReceivingSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
         UDPReceivingSocket.bind(("",int(self.port_for_job)))
-        while (True):
+        while True:
             bytesAddressPair = UDPReceivingSocket.recvfrom(1024)
             message = bytesAddressPair[0]
             address = bytesAddressPair[1]
@@ -123,7 +123,7 @@ def main():
         Executor(int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5])).start()
     else:
         # se avviato per aggiungere un executor dopo aver creato il cluster
-        Executor(0, comm.BROAD_EL_PORT, comm.BROAD_UP_PORT, 50000, True).start()
+        Executor(0, comm.BROAD_EL_PORT, comm.BROAD_UP_PORT, 50000, 1).start()
 
 
 if __name__ == "__main__":
