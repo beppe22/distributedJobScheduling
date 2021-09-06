@@ -23,7 +23,7 @@ def main():
             comm.BROAD_UP_PORT) + " " + str(port) + " " +'0')
         executor_list.append(port)
 
-    sleep(3)
+    sleep(10)
     run_first_elect()
     check_offline(executor_list, gid)
 
@@ -41,10 +41,10 @@ def check_offline(list,id):
             print(str(p) + ' offline')
             os.system("start cmd.exe /k python3 -m cluster.executor " + id + ' ' + str(comm.BROAD_EL_PORT) + " " + str(
                 comm.BROAD_UP_PORT) + " " + str(p) + " "+ "1")
-            sleep(1)
+            sleep(5)
 
         except ConnectionResetError:
-            print(ConnectionResetError)
+            #print(ConnectionResetError)
             pass
         except Exception as e:
             print(e)
