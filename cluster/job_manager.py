@@ -1,6 +1,7 @@
 import socket
 from asyncio import sleep
 from threading import Thread
+from cluster import job as j
 
 
 import job_token as jt
@@ -22,6 +23,8 @@ class JobManager(Thread):
         #socket per comunicazione
         self.sk = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         self.sk.bind(("", self.owner.executor_port))
+
+        self.finished_job=0
 
 
     def receving_job(self):
@@ -57,7 +60,7 @@ class JobManager(Thread):
                     #ping pong necessario per capire se qualcuno è offline
                     self.sk.sendto(comm.PONG.encode(), addr)
             elif m == comm.JOB_REQ_REQ:
-                self.responding_request_client(param[1])
+                self.responding_request_client(int(param[1]))
 
 
 
@@ -70,15 +73,19 @@ class JobManager(Thread):
         #job venisse trasferito da executor a executor questo job_id verrebbe di volta in volta mandato al client
         #ma ciò viene risolto perchè il client sta in attesa di questo valore solo una volta e dunque le
         #altre volte anche se il valore viene spedito dai diversi executor non viene ricevuto dal client
+        for key in self.job_dict :
+            if self.job_dict[key].result!=None :
+                self.finished_job+=1
 
-        self.owner.job_count = len(self.job_token_dict.keys()) - len(self.job_dict.keys())
+        self.owner.job_count = len(self.job_token_dict.keys()) - self.finished_job
         if (self.owner.job_count > self.owner.threshold) :
             self.sk.sendto(str.encode(comm.JOB_EXEC_REQ + comm.SEPARATOR + message + comm.SEPARATOR + '0'
                                       + comm.SEPARATOR + address),self.owner.free_exec)
             self.job_forw[self.job_id]= self.owner.free_exec
         else :
-         job_token_thread=jt.JobToken(self, str(self.job_id), int(message), address)
+         job_token_thread=jt.JobToken(self, self.job_id, int(message))
          self.job_token_dict[self.i]=job_token_thread
+         self.job_dict[self.job_id] = (j.Job(self.job_id, int(message), None, address))
          job_token_thread.start()
 
          #sleep(1)
@@ -89,16 +96,26 @@ class JobManager(Thread):
 
     def responding_request_client(self,job_id):
 
+        self.result= None
+
         if job_id in self.job_forw.keys() :
+
             self.sk.sendto(str.encode(comm.JOB_REQ_REQ + comm.SEPARATOR + str(job_id)),self.job_forw[job_id])
         else:
-         self.result = self.job_dict[job_id].result
+         print("eccolo2")
+         if job_id in self.job_dict.keys() :
+             print("eccolo2")
+             self.result = self.job_dict[job_id].result
+         print("eccolo4")
          self.client_address = self.job_dict[job_id].client_address
+         #TODO ristrutturare sta cosa perchè se avessimo tante esecuzioni il result risulterebbe sempre diverso da none
          if self.result != None:
+            print("eccolo5")
             self.sk.sendto(str.encode(str(self.result)), self.client_address)
          else:
+            print("eccolo6")
             self.sk.sendto(str.encode("Risultato ancora non calcolato"), self.client_address)
-
+            pass
     def run(self):
         self.receving_job()
 

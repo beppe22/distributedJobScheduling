@@ -27,7 +27,7 @@ COORD_LOST_TO = 10
 LEADER_OFFLINE_TO = 3
 
 # dopo quanti sec exec viene considerato offline
-EXEC_OFFLINE_TO = 3
+EXEC_OFFLINE_TO = 10
 
 # ogni quanto il leader manda aggiornamenti
 STEP = 0.3
