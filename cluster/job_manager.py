@@ -21,7 +21,6 @@ class JobManager(Thread):
     def receving_job(self):
 
         self.job_id = 0
-
         while True:
 
             # io manterrei la comunicazione come le due linee di codice succesive ovvero una stringa separata da
@@ -31,7 +30,7 @@ class JobManager(Thread):
 
             data, addr = self.sk.recvfrom(1024)
             param = data.decode().split(comm.SEPARATOR)
-
+           # print(param)
 
            # bytesAddressPair = sk.recvfrom(1024)
             #message = bytesAddressPair[0]
@@ -73,6 +72,6 @@ class JobManager(Thread):
 
 
     def run(self):
-        rm.ResultsManager(self).start()
+        #rm.ResultsManager(self).start()
         self.receving_job()
 
