@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
+WAIT = "premi per continuare"
 MESSAGE = "quanti exec vuoi avviare?"
+MESSAGE_ALREADY = "quanti exec hai già avviato?"
 MESSAGE_NUMBER_CLIENT= "quanti client vuoi avviare?"
 MESSAGE_GID = "group id:"
 ELECTMSG = "ELECT"
