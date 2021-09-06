@@ -71,7 +71,7 @@ def main():
 
 
         print(executor_list)
-        sleep(5)
+        sleep(10)
         run_first_elect()
         adding = False
         if flag:

@@ -37,7 +37,7 @@ class Updater(Thread):
             #print('sending update')
 
             # simulazione job
-            self.owner.job_count = int(random.uniform(0, 30))
+            #self.owner.job_count = int(random.uniform(0, 30))
 
             msg = str(self.owner.id)+comm.SEPARATOR+str(self.owner.job_count)+comm.SEPARATOR+str(self.owner.executor_port)
             self.leader_socket.sendto(msg.encode(), self.owner.leader_addr)

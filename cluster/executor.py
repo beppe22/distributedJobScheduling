@@ -74,7 +74,7 @@ class Executor(Thread):
         #job_manager gestisce pure i pingpong
         self.job_manager.start()
 
-        self.exec_stuff()
+        #self.exec_stuff()
 
         #self.receiving_result()
 

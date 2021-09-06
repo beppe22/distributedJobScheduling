@@ -19,7 +19,7 @@ class JobToken(Thread):
         #TODO dovrei killare
 
     def compute_result(self, ):
-
+        sleep(2)
         self.result = self.parameter * 2
         self.owner.job_dict[self.job_id] = (j.Job(self.job_id, int(self.parameter), self.result, self.client_address))
 
