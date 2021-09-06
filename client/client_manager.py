@@ -11,10 +11,11 @@ class ClientManager(Thread):
         self.number= self.owner.number
         self.IpServer= self.owner.IpServer
         self.PortServer= self.owner.PortServer
+        self.job_id= None
 
     def send_job(self):
 
-        bytesToSend= str.encode(self.number)
+        bytesToSend= str.encode(comm.JOB_EXEC_REQ + ' ' + self.number)
 
         self.UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
         self.UDPClientSocket.sendto(bytesToSend,(str(self.IpServer),int(self.PortServer)))
@@ -23,10 +24,13 @@ class ClientManager(Thread):
 
     def receiving_job_id(self):
         msg=self.UDPClientSocket.recvfrom(1024)
-        print("L'id del job è {}".format(str(int(msg[0]))))
+        self.job_id= int(msg[0])
+        print("L'id del job è {}".format(str(self.job_id)))
 
     def receiving_result(self):
 
+        choise= input("Digita 1 quando vuoi ricevere il risultato")
+        self.UDPClientSocket.sendto(str.encode('JOB_REQ_REQ' + ' ' +str(self.job_id)),(str(self.IpServer),int(self.PortServer)))
         messageFromServer= self.UDPClientSocket.recvfrom(1024)
         msg= "Il risultato è {}".format(messageFromServer[0])
         print("Il risultato è")

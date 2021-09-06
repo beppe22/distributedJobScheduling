@@ -79,35 +79,6 @@ class Executor(Thread):
         #self.receiving_result()
 
 
-    #TODO serve sto codice?
-    def receiving_result(self):
-
-
-        UDPReceivingSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-        UDPReceivingSocket.bind(("",int(self.port_for_job)))
-        while True:
-            bytesAddressPair = UDPReceivingSocket.recvfrom(1024)
-            message = bytesAddressPair[0]
-            address = bytesAddressPair[1]
-
-            #clientMsg = "risultato:{}".format(message.split()[0])
-            #indice= message.split()[1]
-            #print(clientMsg)
-            #print(indice)
-
-            client_Ip= self.job_dict[int(message.split()[1])].IpClient
-            client_port = self.job_dict[int(message.split()[1])].portClient
-            client_address= (str(client_Ip),int(client_port))
-            self.UDPExecutorSocket.sendto(str.encode(str(int(message.split()[0]))),client_address)
-
-            self.job_dict.pop(int(message.split()[1]),"Element not found")
-
-
-
-
-
-
-
     def exec_stuff(self):
         while True:
             while self.is_election or self.is_leader:

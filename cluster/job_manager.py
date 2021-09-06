@@ -1,7 +1,8 @@
 import socket
 from asyncio import sleep
 from threading import Thread
-from cluster import job as j
+from cluster import results_manager as rm
+
 import job_token as jt
 import messages as comm
 
@@ -58,17 +59,12 @@ class JobManager(Thread):
 
         # TODO fare i controlli per vedere se executor non ha superato threshold
 
-        jt.JobToken(self, str(self.job_id), int(message)).start()
+        jt.JobToken(self, str(self.job_id), int(message), address).start()
 
         sleep(1)
 
-        self.job_dict[self.job_id] = (j.Job(self.job_id, int(message), self.result, address[0], address[1]))
-
-        # spedisco il risultato al client
-
-        self.owner.UDPExecutorSocket.sendto(str.encode(str(self.result)), address)
-
         self.job_id += 1
+
         # self.job_dict.pop(int(message.split()[1]), "Element not found")
 
 
@@ -77,4 +73,6 @@ class JobManager(Thread):
 
 
     def run(self):
+        rm.ResultsManager(self).start()
         self.receving_job()
+

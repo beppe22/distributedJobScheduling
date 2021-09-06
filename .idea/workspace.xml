@@ -2,12 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="83578a91-3e70-4be9-ada3-bd10341f3a59" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/cluster/results_manager.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/client_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/client/client_manager.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cluster/executor.py" beforeDir="false" afterPath="$PROJECT_DIR$/cluster/executor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cluster/job.py" beforeDir="false" afterPath="$PROJECT_DIR$/cluster/job.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cluster/job_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/cluster/job_manager.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/job_token.py" beforeDir="false" afterPath="$PROJECT_DIR$/job_token.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messages.py" beforeDir="false" afterPath="$PROJECT_DIR$/messages.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/starterCMD.py" beforeDir="false" afterPath="$PROJECT_DIR$/starterCMD.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,11 +37,11 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/starterCMD.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/startclientCMD.py" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager">
-    <configuration name="starterCMD" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+    <configuration name="startclientCMD" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="distributedJobScheduling" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -51,7 +54,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/starterCMD.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/startclientCMD.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -75,7 +78,7 @@
       <workItem from="1630579226780" duration="601000" />
       <workItem from="1630587329672" duration="8221000" />
       <workItem from="1630661894015" duration="23369000" />
-      <workItem from="1630837156973" duration="21662000" />
+      <workItem from="1630837156973" duration="28774000" />
     </task>
     <task id="LOCAL-00001" summary="changes">
       <created>1630777070495</created>
@@ -98,7 +101,14 @@
       <option name="project" value="LOCAL" />
       <updated>1630865189276</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="last changes">
+      <created>1630875178790</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1630875178790</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -110,6 +120,6 @@
     <option name="LAST_COMMIT_MESSAGE" value="last changes" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/distributedJobScheduling$starterCMD.coverage" NAME="starterCMD Coverage Results" MODIFIED="1630874308887" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/distributedJobScheduling$starterCMD.coverage" NAME="starterCMD Coverage Results" MODIFIED="1630921391203" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

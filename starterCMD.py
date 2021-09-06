@@ -25,7 +25,7 @@ def main():
 
     sleep(3)
     run_first_elect()
-    check_offline(executor_list, gid)
+    #check_offline(executor_list, gid)
 
 def check_offline(list,id):
     p = comm.C2C_PORT
