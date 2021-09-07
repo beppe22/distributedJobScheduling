@@ -48,8 +48,13 @@ class Leader(Thread):
             tot_job = tot_job + val
             exec_tot = exec_tot + 1
 
-        self.threshold = int(tot_job/exec_tot)
-        self.free_exec = self.ex_port.get(lazy)
+        if exec_tot:
+            self.threshold = int(tot_job/exec_tot)
+        else:
+            self.threshold=0
+        if self.ex_port.get(lazy):
+            self.free_exec = self.ex_port.get(lazy)
+
         #print('\nlazy exec: '+lazy + ' : ' + self.ex_map.get(lazy) + ' th:' +str(self.threshold))
         #print(self.free_exec)
 
@@ -66,13 +71,18 @@ class Leader(Thread):
         print(msg)
 
     def receive_up(self):
-        data, addr = self.socket.recvfrom(1024)
-        param = data.decode().split(comm.SEPARATOR)
-        #print('time: ' + str(param[3]) +':'+str(param[4]) +':'+ str(param[5]) )
+        self.socket.settimeout(0.1)
+        try:
+            data, addr = self.socket.recvfrom(1024)
+            param = data.decode().split(comm.SEPARATOR)
+            #print('time: ' + str(param[3]) +':'+str(param[4]) +':'+ str(param[5]) )
+            self.ex_map.update({param[0]: param[1]})
+            lazy = addr[0] + comm.SEPARATOR + param[2]
+            self.ex_port.update({param[0]: lazy})
+        except socket.timeout:
+            pass
 
-        self.ex_map.update({param[0]: param[1]})
-        lazy = addr[0]+comm.SEPARATOR+param[2]
-        self.ex_port.update({param[0]: lazy})
+
 
 
     def run(self):

@@ -15,7 +15,7 @@ class Client(Thread):
 
     def send_job(self, ):
 
-        self.client_manager= cm.ClientManager(self)
+        self.client_manager= cm.ClientManager(self, self.port)
         self.client_manager.start()
 
 

@@ -22,6 +22,7 @@ class Executor(Thread):
         # job_count_lock
 
         l1 = threading.RLock()
+        l2 = threading.RLock()
 
         # connessioni
         self.executor_port = int(executor_port)
@@ -31,12 +32,12 @@ class Executor(Thread):
         self.elect_manager = el.ElectionManager(self)
 
         self.update_port = int(update_port)
-        self.updater = up.Updater(self,l1)
+        self.updater = up.Updater(self,l1, l2)
 
         # dizionario dei job
         self.job_dict = {}
 
-        self.job_manager = jm.JobManager(self,l1)
+        self.job_manager = jm.JobManager(self,l1, l2)
 
         # id- deve essere un intero!
         self.group_id = group_id
