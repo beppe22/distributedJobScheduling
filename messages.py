@@ -30,7 +30,7 @@ LEADER_OFFLINE_TO = 3
 EXEC_OFFLINE_TO = 10
 
 # ogni quanto il leader manda aggiornamenti
-STEP = 0.3
+STEP = 0.1
 
 ##COMANDI REMOTI CLIENT
 JOB_EXEC_REQ = 'JOB_EXEC_REQ'

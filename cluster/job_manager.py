@@ -8,8 +8,9 @@ import job_token as jt
 import messages as comm
 
 class JobManager(Thread):
-    def __init__(self, owner):
+    def __init__(self, owner, lock):
         Thread.__init__(self)
+        self.lock=lock
         self.owner = owner
         self.job_dict = self.owner.job_dict
 
@@ -24,7 +25,8 @@ class JobManager(Thread):
         self.sk = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         self.sk.bind(("", self.owner.executor_port))
 
-        self.finished_job=0
+        self.job_count = 0
+        self.finished_job = 0
 
 
     def receving_job(self):
@@ -51,47 +53,71 @@ class JobManager(Thread):
             m = param[0]
             if m == comm.JOB_EXEC_REQ:
                     if(param[2]=='1') :
-                      self.job_exec_request(addr, param[1])
+                      self.job_exec_request(addr, param[1], True)
                     elif(param[2]=='0'):
-                      self.job_exec_request(param[3], param[1])
-            elif m == comm.JOB_RES_REQ:
-                    pass
+                      self.job_exec_request((param[3], int(param[4])), param[1], False)
             elif m == comm.PING:
                     #ping pong necessario per capire se qualcuno è offline
                     self.sk.sendto(comm.PONG.encode(), addr)
             elif m == comm.JOB_REQ_REQ:
                 self.responding_request_client(int(param[1]))
 
+            self.routine_check()
+
+    def routine_check(self):
+
+        # controllo dei job terminati
+        self.lock.acquire()
+        self.finished_job = 0
+        for key in self.job_dict:
+            if self.job_dict[key].result:
+                self.finished_job += 1
+        # conteggio
+        self.job_count = len(self.job_token_dict) - self.finished_job
+        self.lock.release()
 
 
 
 
-    def job_exec_request(self, address, message):
+
+     # direct necessario per evitare catene di inoltro
+    def job_exec_request(self, address, message, direct):
+
+        address=(str(address[0]), int(address[1]))
         # mando al client l'id del job
 
-        self.sk.sendto(str.encode(str(self.job_id)), address) #problema: se ad esempio il
-        #job venisse trasferito da executor a executor questo job_id verrebbe di volta in volta mandato al client
-        #ma ciò viene risolto perchè il client sta in attesa di questo valore solo una volta e dunque le
-        #altre volte anche se il valore viene spedito dai diversi executor non viene ricevuto dal client
-        for key in self.job_dict :
-            if self.job_dict[key].result!=None :
-                self.finished_job+=1
+        message=int(message)
 
-        self.owner.job_count = len(self.job_token_dict.keys()) - self.finished_job
-        if (self.owner.job_count > self.owner.threshold) :
-            self.sk.sendto(str.encode(comm.JOB_EXEC_REQ + comm.SEPARATOR + message + comm.SEPARATOR + '0'
-                                      + comm.SEPARATOR + address),self.owner.free_exec)
-            self.job_forw[self.job_id]= self.owner.free_exec
-        else :
-         job_token_thread=jt.JobToken(self, self.job_id, int(message))
-         self.job_token_dict[self.i]=job_token_thread
-         self.job_dict[self.job_id] = (j.Job(self.job_id, int(message), None, address))
-         job_token_thread.start()
+        self.sk.sendto(str.encode(str(self.job_id)), address) # problema: se ad esempio il
+        # job venisse trasferito da executor a executor questo job_id verrebbe di volta in volta mandato al client
+        # ma ciò viene risolto perchè il client sta in attesa di questo valore solo una volta e dunque le
+        # altre volte anche se il valore viene spedito dai diversi executor non viene ricevuto dal client
 
-         #sleep(1)
+        temp = self.owner.free_exec
 
-         self.job_id += 1
-         self.i += 1
+        # inoltro
+        if self.job_count > self.owner.threshold and direct and temp[1] != self.owner.executor_port:
+
+            msg = comm.JOB_EXEC_REQ + comm.SEPARATOR + str(message) + comm.SEPARATOR + '0' \
+                 + comm.SEPARATOR + str(address[0]) + comm.SEPARATOR + str(address[1])
+
+
+            self.sk.sendto(str.encode(msg), temp)
+            self.job_forw[self.job_id] = temp
+        else:
+            job_token_thread = jt.JobToken(self, self.job_id, int(message))
+
+            self.job_token_dict[self.i] = job_token_thread
+            self.i += 1
+
+            self.job_dict[self.job_id] = (j.Job(self.job_id, int(message), None, address))
+
+
+            job_token_thread.start()
+
+
+
+        self.job_id += 1
 
 
     def responding_request_client(self,job_id):

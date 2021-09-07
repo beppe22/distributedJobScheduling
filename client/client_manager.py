@@ -12,12 +12,15 @@ class ClientManager(Thread):
         self.IpServer= None
         self.PortServer= None
         self.job_id= None
+        self.flag=1
 
     def send_job(self):
 
         self.number = input(comm.MESSAGE_TO_CLIENT)
-        self.IpServer = input("Give me the server address")
-        self.PortServer = input("give me the server port")
+        if self.flag:
+            self.IpServer = input("Give me the server address")
+            self.PortServer = input("give me the server port")
+            self.flag=0
 
         bytesToSend= str.encode(comm.JOB_EXEC_REQ + comm.SEPARATOR + self.number + comm.SEPARATOR + '1' +
                                 comm.SEPARATOR + '')

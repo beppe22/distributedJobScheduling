@@ -18,10 +18,8 @@ class JobToken(Thread):
         #TODO dovrei killare
 
     def compute_result(self, ):
-        sleep(10)
+        sleep(15)
         self.owner.job_dict[self.job_id].result= self.parameter * 2
-
-        sleep(3)
 
     def run(self):
         self.compute_result()

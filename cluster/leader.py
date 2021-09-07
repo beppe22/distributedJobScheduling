@@ -27,6 +27,7 @@ class Leader(Thread):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind(self.owner.leader_addr)
 
+
     def calc_threshold(self):
         tot_job = 0
         exec_tot = 0
@@ -62,24 +63,31 @@ class Leader(Thread):
             while len(temp) < 4:
                 temp = temp + ' '
             msg = msg + temp
-        #print(msg)
+        print(msg)
 
     def receive_up(self):
         data, addr = self.socket.recvfrom(1024)
         param = data.decode().split(comm.SEPARATOR)
+        #print('time: ' + str(param[3]) +':'+str(param[4]) +':'+ str(param[5]) )
+
         self.ex_map.update({param[0]: param[1]})
         lazy = addr[0]+comm.SEPARATOR+param[2]
         self.ex_port.update({param[0]: lazy})
 
-    def run(self):
 
+    def run(self):
+        tik=0
         while self.owner.is_leader:
             msg = str(self.threshold) + comm.SEPARATOR + str(self.free_exec)
             #print(msg)
             self.update_socket_broadcast.sendto(msg.encode(), ('<broadcast>', self.update_port))
             self.receive_up()
             self.calc_threshold()
-            self.monitor()
+            if tik>5:
+                self.monitor()
+                tik = 0
+            else:
+                tik+=1
 
             if self.owner.is_election:
                 break

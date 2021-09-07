@@ -2,6 +2,7 @@
 import os
 import sys
 import socket
+import threading
 from threading import Thread
 from time import sleep
 
@@ -18,6 +19,9 @@ flag = False
 class Executor(Thread):
     def __init__(self, group_id, elect_port, update_port, executor_port, start_election, restart=0):
         Thread.__init__(self)
+        # job_count_lock
+
+        l1 = threading.RLock()
 
         # connessioni
         self.executor_port = int(executor_port)
@@ -27,12 +31,12 @@ class Executor(Thread):
         self.elect_manager = el.ElectionManager(self)
 
         self.update_port = int(update_port)
-        self.updater = up.Updater(self)
+        self.updater = up.Updater(self,l1)
 
         # dizionario dei job
         self.job_dict = {}
 
-        self.job_manager = jm.JobManager(self)
+        self.job_manager = jm.JobManager(self,l1)
 
         # id- deve essere un intero!
         self.group_id = group_id
@@ -51,12 +55,14 @@ class Executor(Thread):
         self.free_exec = (0,)
 
         # qui o usiamo il contatore job_count oppure usiamo direttamente la dimensione della lista.
-        self.job_count = 0
+        #self.job_count = 0
         #valore arbitrario
         self.threshold = 5
         self.job_result = None
 
         self.start_election = start_election
+
+
 
 
 
