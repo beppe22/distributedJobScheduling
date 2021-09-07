@@ -7,7 +7,7 @@ MESSAGE_GID = "group id:"
 ELECTMSG = "ELECT"
 SEPARATOR = ":"
 COORDMSG = "COORD"
-MESSAGE_TO_CLIENT = "give me the number to elaborate"
+
 
 
 # il minimo delle porte usate dovrebbe essere 49152
@@ -30,7 +30,7 @@ LEADER_OFFLINE_TO = 3
 EXEC_OFFLINE_TO = 10
 
 # ogni quanto il leader manda aggiornamenti
-STEP = 0.1
+STEP = 0
 
 ##COMANDI REMOTI CLIENT
 JOB_EXEC_REQ = 'JOB_EXEC_REQ'
@@ -42,3 +42,20 @@ JOB_RESULT = 'JOB_RESULT'
 
 PING = 'PING'
 PONG = 'PONG'
+
+#CLIENT
+LINE = '------------------------------------------------'
+COMMAND_CHOICE = ' Choose:\n  0- send a new JOB \n  1- recall result using JOB_ID \n'\
+                    '  2- edit worker address\n'
+ADDRESS_REQ = " Insert worker IP: "
+PORT_REQ = " Insert worker PORT: "
+
+MESSAGE_TO_CLIENT = " Type the JOB input number: "
+ERR= ' Wrong address?'
+TIME= ' Worker may be offline, retry later'
+JOB_ID_REQ=' Insert the JOB_ID: '
+JOB_ID_RPL=' JOB_ID: '
+RESULT= " The result is: "
+
+#WORKER
+WERR= ' Wrong number?'

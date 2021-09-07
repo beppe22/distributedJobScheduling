@@ -22,7 +22,7 @@ class Updater(Thread):
         self.leader_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)  # UDP
         #self.leader_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.first_start = True
-
+        self.old_job_count=-1
 
         # socket su cui ricevo gli update riguardo la th
         self.update_socket_broadcast = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)  # UDP
@@ -31,7 +31,7 @@ class Updater(Thread):
         self.update_socket_broadcast.bind(("", self.update_port))
 
     def send_job_count(self):
-        sleep(random.uniform(0.5, 1))
+
         if self.owner.leader_addr and self.first_start:
             #self.leader_socket.bind(self.owner.leader_addr)
             self.first_start = False
@@ -52,11 +52,12 @@ class Updater(Thread):
     def update_th(self):
         sk = self.update_socket_broadcast
         sk.settimeout(comm.LEADER_OFFLINE_TO)
-        tik=0
+        starvation=0
         try:
             while True:
                 # se sta andando un elezione devo stare in attesa
                 while self.owner.is_election:
+                    self.old_job_count=-1
                     sleep(1)
                 # ricevo l' aggiornamento
                 data, addr = sk.recvfrom(1024)
@@ -67,11 +68,12 @@ class Updater(Thread):
                 #print(data)
                 self.l2.release()
                 # mando il conteggio dei job attivi
-                if tik > 5:
+                if self.old_job_count!=self.owner.job_manager.job_count or starvation>100:
                     self.send_job_count()
-                    tik = 0
+                    self.old_job_count = self.owner.job_manager.job_count
+                    starvation=0
                 else:
-                    tik += 1
+                    starvation += 1
 
         except socket.timeout:
             # è scattato il timeout, il leader si è disconnesso. devo mandare nuove elezioni

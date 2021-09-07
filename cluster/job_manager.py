@@ -1,10 +1,7 @@
 import socket
-from asyncio import sleep
 from threading import Thread
-from cluster import job as j
+from cluster import job as j, job_token as jt
 
-
-import job_token as jt
 import messages as comm
 
 class JobManager(Thread):
@@ -85,7 +82,7 @@ class JobManager(Thread):
 
         message=int(message)
         msg = str(self.job_id)
-        print(msg)
+        #print(msg)
         if direct:
             self.sk.sendto(msg.encode(), address) # problema: se ad esempio il
         # job venisse trasferito da executor a executor questo job_id verrebbe di volta in volta mandato al client
@@ -97,7 +94,7 @@ class JobManager(Thread):
         temp = self.owner.free_exec
 
         # inoltro
-        if self.job_count > self.owner.threshold and direct and temp[1] != self.owner.executor_port:
+        if (self.job_count + 1) > self.owner.threshold and direct and temp[1] != self.owner.executor_port:
 
             new_job_id = str(self.owner.id) +'-' + str(self.job_id)
             msg = comm.JOB_EXEC_REQ + comm.SEPARATOR + str(message) + comm.SEPARATOR + '0' \
@@ -117,7 +114,8 @@ class JobManager(Thread):
             self.job_token_dict[self.i] = job_token_thread
             self.i += 1
             self.job_dict[id] = (j.Job(id, int(message), None, address))
-            print('job_id' + str(id))
+            if not self.owner.is_leader:
+                print('job_id' + str(id))
             job_token_thread.start()
 
         self.l2.release()
@@ -125,7 +123,8 @@ class JobManager(Thread):
 
 
     def responding_request_client(self,job_id, addr):
-        print('job_request' + str(job_id))
+        if not self.owner.is_leader:
+            print('job_request' + str(job_id))
 
         self.result = None
 
@@ -138,12 +137,12 @@ class JobManager(Thread):
         if job_id in self.job_dict.keys():
             self.result = self.job_dict[job_id].result
             client_address = self.job_dict[job_id].client_address
-            print(client_address)
+            #print(client_address)
             if self.result != None:
-                print("eccolo5")
+                #print("eccolo5")
                 self.sk.sendto(str.encode(str(self.result)), client_address)
             else:
-                print("eccolo6")
+                #print("eccolo6")
                 self.sk.sendto(str.encode("Risultato ancora non calcolato"), client_address)
         else:
             self.sk.sendto(str.encode("Job Non esiste"), addr)

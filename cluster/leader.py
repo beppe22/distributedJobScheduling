@@ -59,8 +59,11 @@ class Leader(Thread):
         #print(self.free_exec)
 
     def monitor(self):
-        temp = str(self.threshold)
-        while len(temp) < 4:
+        temp = str(len(self.ex_map.values()))
+        while len(temp) < 5:
+            temp = temp + ' '
+        temp = temp + str(self.threshold)
+        while len(temp) < 10:
             temp = temp + ' '
         msg = temp + '- '
         for i in self.ex_map.values():
