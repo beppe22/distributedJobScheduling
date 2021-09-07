@@ -8,12 +8,16 @@ class ClientManager(Thread):
     def __init__(self,owner):
         Thread.__init__(self)
         self.owner=owner
-        self.number= self.owner.number
-        self.IpServer= self.owner.IpServer
-        self.PortServer= self.owner.PortServer
+        self.number= None
+        self.IpServer= None
+        self.PortServer= None
         self.job_id= None
 
     def send_job(self):
+
+        self.number = input(comm.MESSAGE_TO_CLIENT)
+        self.IpServer = input("Give me the server address")
+        self.PortServer = input("give me the server port")
 
         bytesToSend= str.encode(comm.JOB_EXEC_REQ + comm.SEPARATOR + self.number + comm.SEPARATOR + '1' +
                                 comm.SEPARATOR + '')
@@ -22,7 +26,7 @@ class ClientManager(Thread):
         self.UDPClientSocket.sendto(bytesToSend,(str(self.IpServer),int(self.PortServer)))
 
         self.receiving_job_id()
-        self.receiving_result()
+
 
     def receiving_job_id(self):
         msg=self.UDPClientSocket.recvfrom(1024)
@@ -41,6 +45,12 @@ class ClientManager(Thread):
         print(messageFromServer[0])
 
     def run(self):
-        self.send_job()
+
+        while(True):
+         print("Vuoi spedire un job oppure vuoi avere il risultato di un job spedito?")
+         answer = input("Digita 0 per la prima opzione, 1 per la seconda")
+         if answer=='0':
+            self.send_job()
+         else : self.receiving_result()
 
 

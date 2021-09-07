@@ -3,10 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="83578a91-3e70-4be9-ada3-bd10341f3a59" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/client.py" beforeDir="false" afterPath="$PROJECT_DIR$/client/client.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/client_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/client/client_manager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cluster/job_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/cluster/job_manager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/job_token.py" beforeDir="false" afterPath="$PROJECT_DIR$/job_token.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/messages.py" beforeDir="false" afterPath="$PROJECT_DIR$/messages.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +42,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$/starterCMD.py" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager" selected="Python.startclientCMD">
+  <component name="RunManager" selected="Python.starterCMD">
     <configuration name="startclientCMD" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="distributedJobScheduling" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -111,7 +109,8 @@
       <workItem from="1630837156973" duration="28774000" />
       <workItem from="1630935199043" duration="2067000" />
       <workItem from="1630938131945" duration="10644000" />
-      <workItem from="1630949302562" duration="7651000" />
+      <workItem from="1630949302562" duration="7745000" />
+      <workItem from="1631007061548" duration="1781000" />
     </task>
     <task id="LOCAL-00001" summary="changes">
       <created>1630777070495</created>
@@ -148,7 +147,14 @@
       <option name="project" value="LOCAL" />
       <updated>1630949866188</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="last changes">
+      <created>1630961843346</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1630961843346</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -161,7 +167,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/distributedJobScheduling$starterCMD.coverage" NAME="starterCMD Coverage Results" MODIFIED="1630921391203" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/distributedJobScheduling2$startclientCMD.coverage" NAME="startclientCMD Coverage Results" MODIFIED="1630961750102" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/distributedJobScheduling2$starterCMD.coverage" NAME="starterCMD Coverage Results" MODIFIED="1630961741591" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/distributedJobScheduling2$startclientCMD.coverage" NAME="startclientCMD Coverage Results" MODIFIED="1631008365265" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/distributedJobScheduling2$starterCMD.coverage" NAME="starterCMD Coverage Results" MODIFIED="1631008390940" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
