@@ -9,35 +9,33 @@ import messages as comm
 import traceback
 
 
-executor_list = {}
-adding = threading.RLock()
 
 class Ping(Thread):
-        def __init__(self,):
+        def __init__(self, dict, ind):
             Thread.__init__(self)
-            self.dict = executor_list
+            self.dict = dict
             self.skp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-            self.skp.bind(("", comm.C2C_PORT))
+            #self.skp.bind(("", comm.C2C_PORT))
             self.skp.settimeout(comm.EXEC_OFFLINE_TO)
 
         def check_offline(self):
             p = comm.C2C_PORT
             while True:
                 try:
-                    adding.acquire()
+                    #adding.acquire()
                     for p in self.dict:
                         self.skp.sendto(comm.PING.encode(), ("127.0.0.1", p))
                         data, addr = self.skp.recvfrom(1024)
                         #param = data.decode().split(comm.SEPARATOR)
                         #print(addr)
-                    adding.release()
-
+                    #adding.release()
+                    sleep(0.5)
                 except socket.timeout:
-                    #print('\n'+ str(p) + ' offline: restarting')
+                    print('\n'+ str(p) + ' offline: restarting')
                     os.system("start cmd.exe /k python3 -m cluster.executor " + self.dict.get(p) + ' ' + str(
                         comm.BROAD_EL_PORT) + " " + str(
                         comm.BROAD_UP_PORT) + " " + str(p) + " " + "1" + " "+ "1")
-                    sleep(4)
+                    sleep(2)
 
                 except ConnectionResetError:
                     # print(ConnectionResetError)
@@ -45,6 +43,7 @@ class Ping(Thread):
                 except Exception as e:
                     print(e)
                     traceback.print_exc()
+
 
         def run(self):
             self.check_offline()
@@ -54,11 +53,11 @@ class Ping(Thread):
 
 def main():
     already_started=0
-    flag=1
+    ind = 0
 
     while True:
+        executor_list = {}
 
-        adding.acquire()
         count_executor = input(comm.MESSAGE)
         if not count_executor.isnumeric():
             print(comm.WERR)
@@ -75,17 +74,18 @@ def main():
             port = comm.MINPORT + ((already_started + i) * 3)
             os.system("start cmd.exe /k python3 -m cluster.executor " + gid + ' ' + str(comm.BROAD_EL_PORT) + " " + str(
                 comm.BROAD_UP_PORT) + " " + str(port) + " " +'0' + " " +'0')
+
             executor_list.update({port: gid})
 
         already_started = already_started + count_executor
 
         print(executor_list)
-        sleep(10)
+        sleep(5)
         run_first_elect()
-        adding.release()
-        if flag:
-            Ping().start()
-            flag = 0
+
+
+        Ping(executor_list,ind).start()
+
         input(comm.WAIT)
 
 

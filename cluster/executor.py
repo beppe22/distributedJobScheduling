@@ -20,13 +20,16 @@ class Executor(Thread):
     def __init__(self, group_id, elect_port, update_port, executor_port, start_election, restart=0):
         Thread.__init__(self)
         # job_count_lock
-
+        # id- deve essere un intero!
         l1 = threading.RLock()
         l2 = threading.RLock()
 
         # connessioni
         self.executor_port = int(executor_port)
         self.port_for_job = executor_port+2
+        self.group_id = group_id
+        self.id = int(str(group_id) + str(self.executor_port))
+        print(self.id)
 
         self.elect_port = int(elect_port)
         self.elect_manager = el.ElectionManager(self)
@@ -35,14 +38,11 @@ class Executor(Thread):
         self.updater = up.Updater(self,l1, l2)
 
         # dizionario dei job
-        self.job_dict = {}
+        #self.job_dict = {}
 
-        self.job_manager = jm.JobManager(self,l1, l2)
+        self.job_manager = jm.JobManager(self,l1, l2, restart)
 
-        # id- deve essere un intero!
-        self.group_id = group_id
-        self.id = int(str(group_id)+str(self.executor_port))
-        print(self.id)
+
 
         # leader info
         self.leader_addr = None
