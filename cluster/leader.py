@@ -74,7 +74,7 @@ class Leader(Thread):
         print(msg)
 
     def receive_up(self):
-        self.socket.settimeout(0.1)
+        self.socket.settimeout(0.05)
         try:
             data, addr = self.socket.recvfrom(1024)
             param = data.decode().split(comm.SEPARATOR)
@@ -92,11 +92,11 @@ class Leader(Thread):
         tik=0
         while self.owner.is_leader:
             msg = str(self.threshold) + comm.SEPARATOR + str(self.free_exec)
-            #print(msg)
+            print(msg)
             self.update_socket_broadcast.sendto(msg.encode(), ('<broadcast>', self.update_port))
             self.receive_up()
             self.calc_threshold()
-            if tik>5:
+            if tik>10:
                 self.monitor()
                 tik = 0
             else:
