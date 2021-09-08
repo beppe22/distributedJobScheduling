@@ -1,10 +1,8 @@
 import random
 from threading import Thread
-
-import socket
 from time import sleep
-
 import messages as comm
+import socket
 
 
 class ClientManager(Thread):
@@ -12,10 +10,11 @@ class ClientManager(Thread):
         Thread.__init__(self)
         self.owner=owner
         self.number= None
-        self.IpServer= '127.0.0.1'
+        self.my_ip= socket.gethostbyname(socket.gethostname())
+        self.IpServer= self.my_ip
         self.PortServer= 49300
         self.UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-        self.UDPClientSocket.bind(("", port))
+        self.UDPClientSocket.bind((self.my_ip, port))
         self.UDPClientSocket.settimeout(5)
 
 
@@ -139,6 +138,7 @@ class ClientManager(Thread):
             sleep(comm.TIK)
 
     def run(self):
+        print(self.my_ip)
         print(comm.LINE)
         self.input_addr()
         print(comm.LINE)

@@ -57,8 +57,8 @@ JOB_ID_REQ=' Insert the JOB_ID: '
 JOB_ID_RPL=' JOB_ID: '
 RESULT= " The result is: "
 
-TIK =0.05
-JOBAUTO_N= 5000
+TIK =0.1
+JOBAUTO_N= 500
 
 #WORKER
 WERR= ' Wrong number?'

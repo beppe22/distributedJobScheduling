@@ -1,5 +1,7 @@
 import socket
 from threading import Thread
+from time import sleep
+
 from cluster import job as j, job_token as jt
 import os
 import messages as comm
@@ -214,6 +216,7 @@ class JobManager(Thread):
             job_token_thread.start()
 
         self.l2.release()
+        sleep(0.01)
         self.job_id += 1
 
     # -------------------------------------------------------------------------------------------------------
