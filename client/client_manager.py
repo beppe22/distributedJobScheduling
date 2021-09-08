@@ -38,6 +38,7 @@ class ClientManager(Thread):
 
 
     def receiving_job_id(self):
+        job_id= None
         try:
             msg, addr = self.UDPClientSocket.recvfrom(1024)
             job_id = msg.decode()
@@ -45,7 +46,8 @@ class ClientManager(Thread):
         except Exception as e:
             print(comm.ERR)
             self.input_addr()
-            return
+
+        return job_id
 
 
 
@@ -76,11 +78,71 @@ class ClientManager(Thread):
         if port.isnumeric() and int(port)>=49300:
             self.PortServer = int(port)
 
+    def auto_mode(self):
+        tot=5000
+        job_sent= {}
+
+        self.auto_send(tot, job_sent)
+
+        sleep(15)
+
+        self.auto_recall(job_sent)
+        input('waiting')
+        self.auto_recall(job_sent)
+
+
+
+    def auto_send(self, tot, job_sent):
+        while tot:
+            number = random.randint(1, 50)
+            print(number)
+
+            bytesToSend = str.encode(comm.JOB_EXEC_REQ + comm.SEPARATOR + str(number) + comm.SEPARATOR + '1' +
+                                     comm.SEPARATOR + '')
+            try:
+                self.UDPClientSocket.sendto(bytesToSend, (str(self.IpServer), int(self.PortServer)))
+            except Exception as e:
+                print(comm.ERR)
+                self.input_addr()
+                return
+            id = self.receiving_job_id()
+            # print(id)
+            job_sent.update({id: number})
+            # sleep(0.1)
+            tot -= 1
+
+    def auto_recall(self, job_sent):
+        for i in job_sent:
+            #print(i)
+            try:
+                self.UDPClientSocket.sendto(str.encode(comm.JOB_REQ_REQ + comm.SEPARATOR + str(i)),
+                                            (str(self.IpServer), int(self.PortServer)))
+                messageFromServer, addr = self.UDPClientSocket.recvfrom(1024)
+
+                res = messageFromServer.decode()
+                if res.isnumeric() and int(res)==(job_sent.get(i)*2):
+                    print(str(i) + ' ok')
+                elif not res.isnumeric():
+                    print(res)
+                else:
+                    print(str(i) + ' error' )
+
+            except socket.timeout:
+                print(comm.TIME)
+                return
+            except Exception as e:
+                print(comm.ERR)
+                self.input_addr()
+                return
+
 
     def run(self):
         print(comm.LINE)
         self.input_addr()
         print(comm.LINE)
+
+        if input("auto mode press 1: "):
+            self.auto_mode()
 
         while True:
 

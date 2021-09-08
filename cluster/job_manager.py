@@ -224,15 +224,6 @@ class JobManager(Thread):
 
         self.result = None
 
-        # se è nei forward inoltro la richiesta
-        if job_id in self.job_forw.keys():
-            try:
-                self.sk.sendto(str.encode(comm.JOB_REQ_REQ + comm.SEPARATOR + str(self.job_forw[job_id][1])), self.job_forw[job_id][0])
-            except Exception as e:
-                print(e)
-                return
-            return
-
         #altrimenti controllo di averlo io
         if job_id in self.job_dict.keys():
             self.result = self.job_dict[job_id].result
@@ -244,8 +235,18 @@ class JobManager(Thread):
             else:
                 #print("eccolo6")
                 self.sk.sendto(str.encode("Job not Finished"), client_address)
+
+        elif job_id in self.job_forw.keys():
+            try:
+                self.sk.sendto(str.encode(comm.JOB_REQ_REQ + comm.SEPARATOR + str(self.job_forw[job_id][1])), self.job_forw[job_id][0])
+            except Exception as e:
+                print(e)
+                return
         else:
-            self.sk.sendto(str.encode("Job Uknown"), addr)
+            self.sk.sendto(str.encode("Job Unknown"), addr)
+
+
+
 
     # -------------------------------------------------------------------------------------------------------
 
