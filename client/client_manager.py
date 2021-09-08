@@ -16,7 +16,7 @@ class ClientManager(Thread):
         self.PortServer= 49300
         self.UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
         self.UDPClientSocket.bind(("", port))
-        self.UDPClientSocket.settimeout(2)
+        self.UDPClientSocket.settimeout(5)
 
 
 
@@ -79,7 +79,7 @@ class ClientManager(Thread):
             self.PortServer = int(port)
 
     def auto_mode(self):
-        tot=5000
+        tot=comm.JOBAUTO_N
         job_sent= {}
 
         self.auto_send(tot, job_sent)
@@ -90,11 +90,12 @@ class ClientManager(Thread):
         input('waiting')
         self.auto_recall(job_sent)
 
+        self.run()
 
 
     def auto_send(self, tot, job_sent):
         while tot:
-            number = random.randint(1, 50)
+            number = random.randint(1, 500)
             print(number)
 
             bytesToSend = str.encode(comm.JOB_EXEC_REQ + comm.SEPARATOR + str(number) + comm.SEPARATOR + '1' +
@@ -108,7 +109,7 @@ class ClientManager(Thread):
             id = self.receiving_job_id()
             # print(id)
             job_sent.update({id: number})
-            # sleep(0.1)
+            sleep(comm.TIK)
             tot -= 1
 
     def auto_recall(self, job_sent):
@@ -135,6 +136,7 @@ class ClientManager(Thread):
                 self.input_addr()
                 return
 
+            sleep(comm.TIK)
 
     def run(self):
         print(comm.LINE)
@@ -155,7 +157,7 @@ class ClientManager(Thread):
             else:
                 self.send_job()
             print(comm.LINE)
-            #sleep(0.1)
+            sleep(comm.TIK)
 
 
 

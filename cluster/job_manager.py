@@ -180,7 +180,7 @@ class JobManager(Thread):
 
             #inoltro il job
             self.sk.sendto(str.encode(msg), temp)
-
+            print(str(my_job_id) + str(temp))
             self.job_forw[str(my_job_id)] = (temp, my_job_id)
 
             #scrivo file
