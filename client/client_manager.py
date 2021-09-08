@@ -52,8 +52,7 @@ class ClientManager(Thread):
     def receiving_result(self):
 
         job_choice= input(comm.JOB_ID_REQ)
-        if not job_choice.isnumeric():
-            return
+
         try:
             self.UDPClientSocket.sendto(str.encode(comm.JOB_REQ_REQ + comm.SEPARATOR +str(job_choice)),(str(self.IpServer),int(self.PortServer)))
             messageFromServer, addr = self.UDPClientSocket.recvfrom(1024)

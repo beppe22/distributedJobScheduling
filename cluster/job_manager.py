@@ -61,10 +61,15 @@ class JobManager(Thread):
                     self.job_dict.update({key: job_token_thread})
 
                     #aggiorno il job id al vecchio valore
-                    if key.isnumeric() and int(key) > int(self.job_id):
-                        self.job_id = int(key)
+                    par = key.split('-')
+                    #print(str(par[0]))
+                    #print(str(self.owner.id))
+                    #print(int(par[1]))
+                    if str(par[0])==str(self.owner.id) and int(par[1]) > int(self.job_id):
+                        self.job_id = int(par[1])
+                        print(self.job_id)
 
-            self.job_id+=1
+
 
             #starto i job non ancora ultimati
             for key in self.job_dict:
@@ -79,11 +84,20 @@ class JobManager(Thread):
             with open(self.file_job_forw, 'r') as file:
                 r = csv.reader(file)
                 for row in r:
-                    jid= row[0]
-                    temp= (row[1], int(row[2]))
+                    jid = row[0]
+                    temp = (row[1], int(row[2]))
                     new_job_id = row[3]
                     self.job_forw.update({jid:(temp, new_job_id)})
 
+                    par = jid.split('-')
+                    #print(str(par[0]))
+                    #print(str(self.owner.id))
+                    #print(int(par[1]))
+                    if int(par[1]) > int(self.job_id):
+                        self.job_id = int(par[1])
+                        print(self.job_id)
+
+        self.job_id += 1
 # -------------------------------------------------------------------------------------------------------
 
     def receving_job(self):
@@ -147,38 +161,38 @@ class JobManager(Thread):
         # mando al client l'id del job
 
         message=int(message)
-        msg = str(self.job_id)
+        #msg = str(self.job_id)
+        my_job_id = str(self.owner.id) + '-' + str(self.job_id)
         #print(msg)
         if direct:
-            self.sk.sendto(msg.encode(), address)
+            self.sk.sendto(my_job_id.encode(), address)
 
         self.l2.acquire()
         temp = self.owner.free_exec
 
-        #print(self.sk.getsockname())
         # inoltro
         if self.job_count > self.owner.threshold and direct: #and temp[1] != self.owner.executor_port:
 
-            new_job_id = str(self.owner.id) +'-' + str(self.job_id)
+            #new_job_id = str(self.owner.id) +'-' + str(self.job_id)
             msg = comm.JOB_EXEC_REQ + comm.SEPARATOR + str(message) + comm.SEPARATOR + '0' \
                  + comm.SEPARATOR + str(address[0]) + comm.SEPARATOR + str(address[1]) + comm.SEPARATOR \
-                + new_job_id
+                + my_job_id
 
             #inoltro il job
             self.sk.sendto(str.encode(msg), temp)
 
-            self.job_forw[str(self.job_id)] = (temp, new_job_id)
+            self.job_forw[str(my_job_id)] = (temp, my_job_id)
 
             #scrivo file
             with open(self.file_job_forw, self.command, newline='') as file:
                 wr = csv.writer(file)
-                wr.writerow([str(self.job_id), temp[0], temp[1], new_job_id])
+                wr.writerow([str(my_job_id), temp[0], temp[1], my_job_id])
 
 
 
         else:
             if direct:
-                id=str(self.job_id)
+                id=str(my_job_id)
             else:
                 id=str(new_job_id)
 
@@ -196,7 +210,7 @@ class JobManager(Thread):
                 wr.writerow([id, message, address[0], address[1], 'N'])
 
             if not self.owner.is_leader:
-                print('job_id' + str(id))
+                print('job_id: ' + str(id))
             job_token_thread.start()
 
         self.l2.release()
@@ -204,7 +218,7 @@ class JobManager(Thread):
 
     # -------------------------------------------------------------------------------------------------------
 
-    def responding_request_client(self,job_id, addr):
+    def responding_request_client(self, job_id, addr):
         if not self.owner.is_leader:
             print('job_request id: ' + str(job_id))
 
