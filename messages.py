@@ -59,6 +59,6 @@ RESULT= " The result is: "
 
 TIK =0.1
 JOBAUTO_N= 500
-
+TIMEOUT_CLIENT= 6
 #WORKER
 WERR= ' Wrong number?'

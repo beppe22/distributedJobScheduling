@@ -97,7 +97,7 @@ class JobManager(Thread):
                     #print(int(par[1]))
                     if int(par[1]) > int(self.job_id):
                         self.job_id = int(par[1])
-                        print(self.job_id)
+                        #print(self.job_id)
 
         self.job_id += 1
 # -------------------------------------------------------------------------------------------------------
@@ -159,50 +159,37 @@ class JobManager(Thread):
     # direct necessario per evitare catene di inoltro
     def job_exec_request(self, address, message, new_job_id, direct):
 
-        address=(str(address[0]), int(address[1]))
-        # mando al client l'id del job
+        address = (str(address[0]), int(address[1]))
+        message = int(message)
 
-        message=int(message)
-        #msg = str(self.job_id)
         my_job_id = str(self.owner.id) + '-' + str(self.job_id)
-        #print(msg)
-        if direct:
-            self.sk.sendto(my_job_id.encode(), address)
 
         self.l2.acquire()
         temp = self.owner.free_exec
 
         # inoltro
-        if self.job_count > self.owner.threshold and direct: #and temp[1] != self.owner.executor_port:
+        if self.job_count > self.owner.threshold and direct:
 
-            #new_job_id = str(self.owner.id) +'-' + str(self.job_id)
             msg = comm.JOB_EXEC_REQ + comm.SEPARATOR + str(message) + comm.SEPARATOR + '0' \
                  + comm.SEPARATOR + str(address[0]) + comm.SEPARATOR + str(address[1]) + comm.SEPARATOR \
                 + my_job_id
 
-            #inoltro il job
-            self.sk.sendto(str.encode(msg), temp)
-            print(str(my_job_id) + str(temp))
-            self.job_forw[str(my_job_id)] = (temp, my_job_id)
-
-            #scrivo file
+            # scrivo file
             with open(self.file_job_forw, self.command, newline='') as file:
                 wr = csv.writer(file)
                 wr.writerow([str(my_job_id), temp[0], temp[1], my_job_id])
 
+            #inoltro il job
+            self.sk.sendto(str.encode(msg), temp)
+            #print(str(my_job_id) + str(temp))
+            self.job_forw[str(my_job_id)] = (temp, my_job_id)
 
 
         else:
             if direct:
-                id=str(my_job_id)
+                id = str(my_job_id)
             else:
-                id=str(new_job_id)
-
-            #TODO job token serve?
-            #job_token_thread = jt.JobToken(self, id, int(message))
-            #self.job_token_dict[self.i] = job_token_thread
-            #self.jtoken_writer.writerow([str(self.i), id, message])
-            #self.i += 1
+                id = str(new_job_id)
 
             job_token_thread =(jt.JobToken(id, int(message), address))
             self.job_dict[id] = job_token_thread
@@ -214,10 +201,11 @@ class JobManager(Thread):
             if not self.owner.is_leader:
                 print('job_id: ' + str(id))
             job_token_thread.start()
+            self.sk.sendto(id.encode(), address)
 
         self.l2.release()
-        sleep(0.01)
         self.job_id += 1
+        #sleep(0.01)
 
     # -------------------------------------------------------------------------------------------------------
 
@@ -243,7 +231,7 @@ class JobManager(Thread):
             try:
                 self.sk.sendto(str.encode(comm.JOB_REQ_REQ + comm.SEPARATOR + str(self.job_forw[job_id][1])), self.job_forw[job_id][0])
             except Exception as e:
-                print(e)
+               # print(e)
                 return
         else:
             self.sk.sendto(str.encode("Job Unknown"), addr)

@@ -15,7 +15,7 @@ class ClientManager(Thread):
         self.PortServer= 49300
         self.UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
         self.UDPClientSocket.bind((self.my_ip, port))
-        self.UDPClientSocket.settimeout(5)
+        self.UDPClientSocket.settimeout(comm.TIMEOUT_CLIENT)
 
 
 
@@ -101,10 +101,12 @@ class ClientManager(Thread):
                                      comm.SEPARATOR + '')
             try:
                 self.UDPClientSocket.sendto(bytesToSend, (str(self.IpServer), int(self.PortServer)))
+            except socket.timeout:
+                print(comm.TIME)
             except Exception as e:
                 print(comm.ERR)
                 self.input_addr()
-                return
+                continue
             id = self.receiving_job_id()
             # print(id)
             job_sent.update({id: number})
@@ -129,7 +131,7 @@ class ClientManager(Thread):
 
             except socket.timeout:
                 print(comm.TIME)
-                return
+
             except Exception as e:
                 print(comm.ERR)
                 self.input_addr()
