@@ -155,6 +155,7 @@ class JobManager(Thread):
         self.l2.acquire()
         temp = self.owner.free_exec
 
+        #print(self.sk.getsockname())
         # inoltro
         if self.job_count > self.owner.threshold and direct: #and temp[1] != self.owner.executor_port:
 
