@@ -156,7 +156,7 @@ class JobManager(Thread):
         temp = self.owner.free_exec
 
         # inoltro
-        if self.job_count > self.owner.threshold and direct and temp[1] != self.owner.executor_port:
+        if self.job_count > self.owner.threshold and direct: #and temp[1] != self.owner.executor_port:
 
             new_job_id = str(self.owner.id) +'-' + str(self.job_id)
             msg = comm.JOB_EXEC_REQ + comm.SEPARATOR + str(message) + comm.SEPARATOR + '0' \

@@ -65,7 +65,7 @@ class Updater(Thread):
                 self.l2.acquire()
                 self.owner.threshold = int(param[0])
                 self.owner.free_exec = (param[1], int(param[2]))
-                print(data)
+                #print(data)
                 self.l2.release()
                 # mando il conteggio dei job attivi
                 if self.old_job_count!=self.owner.job_manager.job_count or starvation>100:

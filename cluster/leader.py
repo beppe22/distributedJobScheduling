@@ -85,14 +85,18 @@ class Leader(Thread):
         except socket.timeout:
             pass
 
-
+    def reset(self):
+        self.ex_map = {}
+        self.ex_port = {}
+        self.threshold = 0
 
 
     def run(self):
         tik=0
+        tok=0
         while self.owner.is_leader:
             msg = str(self.threshold) + comm.SEPARATOR + str(self.free_exec)
-            print(msg)
+            #print(msg)
             self.update_socket_broadcast.sendto(msg.encode(), ('<broadcast>', self.update_port))
             self.receive_up()
             self.calc_threshold()
@@ -101,6 +105,12 @@ class Leader(Thread):
                 tik = 0
             else:
                 tik+=1
+
+            if tok>1000:
+                self.reset()
+                tok = 0
+            else:
+                tok+=1
 
             if self.owner.is_election:
                 break
