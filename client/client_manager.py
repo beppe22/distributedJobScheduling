@@ -55,7 +55,7 @@ class ClientManager(Thread):
         job_choice= input(comm.JOB_ID_REQ)
 
         try:
-            self.UDPClientSocket.sendto(str.encode(comm.JOB_REQ_REQ + comm.SEPARATOR +str(job_choice)),(str(self.IpServer),int(self.PortServer)))
+            self.UDPClientSocket.sendto(str.encode(comm.JOB_REP_REQ + comm.SEPARATOR + str(job_choice)), (str(self.IpServer), int(self.PortServer)))
             messageFromServer, addr = self.UDPClientSocket.recvfrom(1024)
         except socket.timeout:
             print(comm.TIME)
@@ -117,7 +117,7 @@ class ClientManager(Thread):
         for i in job_sent:
             #print(i)
             try:
-                self.UDPClientSocket.sendto(str.encode(comm.JOB_REQ_REQ + comm.SEPARATOR + str(i)),
+                self.UDPClientSocket.sendto(str.encode(comm.JOB_REP_REQ + comm.SEPARATOR + str(i)),
                                             (str(self.IpServer), int(self.PortServer)))
                 messageFromServer, addr = self.UDPClientSocket.recvfrom(1024)
 

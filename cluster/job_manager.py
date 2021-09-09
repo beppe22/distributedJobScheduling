@@ -107,18 +107,13 @@ class JobManager(Thread):
 
         while True:
 
-            # io manterrei la comunicazione come le due linee di codice succesive ovvero una stringa separata da
-            # 'comm.SEPARATOR' così poi puoi accedere ai parametri in modo facile con param[i]
-            #
-            # in addr hai il tuo mittente del messaggio
+
             try:
                 data, addr = self.sk.recvfrom(1024)
                 param = data.decode().split(comm.SEPARATOR)
             except:
                 continue
 
-            #comunicazione usando match statement così è più chiara e facile da gestire, poi chiama una sotto funzione tua
-            #per ogni operazione necessaria
 
             m = param[0]
             if m == comm.JOB_EXEC_REQ:
@@ -129,7 +124,7 @@ class JobManager(Thread):
             elif m == comm.PING:
                 #ping pong necessario per capire se qualcuno è offline
                 self.sk.sendto(comm.PONG.encode(), addr)
-            elif m == comm.JOB_REQ_REQ:
+            elif m == comm.JOB_REP_REQ:
                 self.responding_request_client(str(param[1]), addr)
 
             self.routine_check()
@@ -229,7 +224,7 @@ class JobManager(Thread):
 
         elif job_id in self.job_forw.keys():
             try:
-                self.sk.sendto(str.encode(comm.JOB_REQ_REQ + comm.SEPARATOR + str(self.job_forw[job_id][1])), self.job_forw[job_id][0])
+                self.sk.sendto(str.encode(comm.JOB_REP_REQ + comm.SEPARATOR + str(self.job_forw[job_id][1])), self.job_forw[job_id][0])
             except Exception as e:
                # print(e)
                 return
