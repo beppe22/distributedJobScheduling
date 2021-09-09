@@ -69,7 +69,7 @@ class JobManager(Thread):
                     #print(int(par[1]))
                     if str(par[0])==str(self.owner.id) and int(par[1]) > int(self.job_id):
                         self.job_id = int(par[1])
-                        print(self.job_id)
+                        #print(self.job_id)
 
 
 
@@ -163,7 +163,7 @@ class JobManager(Thread):
         temp = self.owner.free_exec
 
         # inoltro
-        if self.job_count > self.owner.threshold and direct:
+        if self.job_count > self.owner.threshold and direct and temp[0]:
 
             msg = comm.JOB_EXEC_REQ + comm.SEPARATOR + str(message) + comm.SEPARATOR + '0' \
                  + comm.SEPARATOR + str(address[0]) + comm.SEPARATOR + str(address[1]) + comm.SEPARATOR \

@@ -29,22 +29,18 @@ class ClientManager(Thread):
                                 comm.SEPARATOR + '')
         try:
             self.UDPClientSocket.sendto(bytesToSend, (str(self.IpServer), int(self.PortServer)))
+            self.receiving_job_id()
         except Exception as e:
             print(comm.ERR)
             self.input_addr()
             return
-        self.receiving_job_id()
-
 
     def receiving_job_id(self):
         job_id= None
-        try:
-            msg, addr = self.UDPClientSocket.recvfrom(1024)
-            job_id = msg.decode()
-            print(comm.JOB_ID_RPL + str(job_id))
-        except Exception as e:
-            print(comm.ERR)
-            self.input_addr()
+
+        msg, addr = self.UDPClientSocket.recvfrom(1024)
+        job_id = msg.decode()
+        print(comm.JOB_ID_RPL + str(job_id))
 
         return job_id
 
@@ -82,17 +78,17 @@ class ClientManager(Thread):
         job_sent= {}
 
         self.auto_send(tot, job_sent)
-
-        sleep(15)
+        input('\nPress a enter to check')
 
         self.auto_recall(job_sent)
-        input('waiting')
+        input('\nPress a enter to check again')
         self.auto_recall(job_sent)
 
         self.run()
 
 
     def auto_send(self, tot, job_sent):
+        flag=tot
         while tot:
             number = random.randint(1, 500)
             print(number)
@@ -101,19 +97,29 @@ class ClientManager(Thread):
                                      comm.SEPARATOR + '')
             try:
                 self.UDPClientSocket.sendto(bytesToSend, (str(self.IpServer), int(self.PortServer)))
+                id = self.receiving_job_id()
+                # print(id)
+                job_sent.update({id: number})
+                tot -= 1
+
             except socket.timeout:
                 print(comm.TIME)
-            except Exception as e:
-                print(comm.ERR)
-                self.input_addr()
-                continue
-            id = self.receiving_job_id()
-            # print(id)
-            job_sent.update({id: number})
-            sleep(comm.TIK)
-            tot -= 1
 
-    def auto_recall(self, job_sent):
+            except Exception as e:
+                if flag == tot:
+                    print(comm.ERR)
+                    self.input_addr()
+                else:
+                    input('Worker is Recovering, Press enter when ready')
+
+
+            sleep(comm.TIK)
+
+
+    def auto_recall(self, job_sent, f= False):
+        temp={}
+        error=0
+        flag= f
         for i in job_sent:
             #print(i)
             try:
@@ -122,22 +128,39 @@ class ClientManager(Thread):
                 messageFromServer, addr = self.UDPClientSocket.recvfrom(1024)
 
                 res = messageFromServer.decode()
+
+                flag= True
                 if res.isnumeric() and int(res)==(job_sent.get(i)*2):
                     print(str(i) + ' ok')
                 elif not res.isnumeric():
                     print(res)
                 else:
                     print(str(i) + ' error' )
+                    error += 1
+
 
             except socket.timeout:
                 print(comm.TIME)
+                temp.update({i: job_sent.get(i)})
+
 
             except Exception as e:
-                print(comm.ERR)
-                self.input_addr()
-                return
+                if not flag:
+                    print(comm.ERR)
+                    self.input_addr()
+                else:
+                    sleep(1)
+                    print(comm.TIME)
+                    temp.update({i: job_sent.get(i)})
 
             sleep(comm.TIK)
+
+        print("Error found: " + str(error) + '\n')
+
+        if len(temp):
+            print("\nchecking again not available jobs:")
+            sleep(2)
+            self.auto_recall(temp, True)
 
     def run(self):
         print(self.my_ip)
